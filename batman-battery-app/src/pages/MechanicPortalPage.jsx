@@ -312,23 +312,23 @@ function MechanicJobCard({ job, techInfo }) {
 
       {/* Full Screen Live GPS Navigation Map Modal */}
       {showInlineMap && (
-        <div className="fixed inset-0 z-[9999] bg-ink/95 backdrop-blur-md flex flex-col p-4 md:p-6 animate-fade-in">
-          <div className="bg-surface border border-white/10 rounded-2xl w-full h-full flex flex-col overflow-hidden shadow-2xl relative">
-            <div className="px-5 py-3.5 border-b border-white/10 bg-surface/90 flex items-center justify-between z-10">
-              <div className="flex items-center gap-2.5">
-                <Navigation className="h-5 w-5 text-signal fill-signal" />
-                <h3 className="font-display font-bold text-mist text-base">
-                  Live GPS Navigation & Trip Map — <span className="text-signal">{job.customerName}</span>
+        <div className="fixed inset-0 z-[9999] bg-ink flex flex-col p-0 md:p-6 animate-fade-in">
+          <div className="bg-surface border-0 md:border border-white/10 rounded-none md:rounded-2xl w-full h-full flex flex-col overflow-hidden shadow-2xl relative">
+            <div className="px-4 py-3 border-b border-white/10 bg-surface flex items-center justify-between z-10 flex-shrink-0">
+              <div className="flex items-center gap-2 truncate pr-2">
+                <Navigation className="h-4 w-4 text-signal fill-signal flex-shrink-0" />
+                <h3 className="font-display font-bold text-mist text-xs md:text-sm truncate">
+                  Live Navigation — <span className="text-signal">{job.customerName}</span>
                 </h3>
               </div>
               <button
                 onClick={() => setShowInlineMap(false)}
-                className="px-3.5 py-1.5 rounded-xl bg-alert/20 border border-alert/40 text-alert hover:bg-alert/30 font-display font-bold text-xs transition-colors"
+                className="px-3 py-1 rounded-xl bg-alert/20 border border-alert/40 text-alert hover:bg-alert/30 font-display font-bold text-xs transition-colors flex-shrink-0"
               >
-                ✕ Close Full Screen Map
+                ✕ Close
               </button>
             </div>
-            <div className="flex-1 w-full h-full relative">
+            <div className="flex-1 w-full h-full relative overflow-hidden">
               <iframe
                 src={`/tech/${job.id}`}
                 title={`Live Navigation Map - ${job.customerName}`}
