@@ -3,7 +3,7 @@ import { Mail, Lock, User, Building2, Phone, CheckCircle2, ShieldAlert } from 'l
 import Button from '@/components/common/Button';
 import { TECHNICIANS_DATA } from '@/utils/statusConfig';
 
-export default function CreateMechanicModal({ isOpen, onClose }) {
+export default function CreateMechanicModal({ isOpen, onClose, onCreateMechanic }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -15,7 +15,29 @@ export default function CreateMechanicModal({ isOpen, onClose }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setSuccessMsg(`Mechanic account successfully created for ${name} (${station})!`);
+    const cleanEmail = email.trim().toLowerCase();
+    const newMechanic = {
+      name,
+      email: cleanEmail,
+      password,
+      stationName: station,
+      town: station.includes('(') ? station.split('(')[1].replace(')', '') : 'Metro Cebu',
+      phone,
+      address: `${station}, Cebu`,
+      coords: { lat: 10.3157, lng: 123.8854 },
+    };
+
+    // Save dynamically created mechanic to localStorage for seamless authentication
+    const existingRaw = localStorage.getItem('batman_created_mechanics');
+    const existing = existingRaw ? JSON.parse(existingRaw) : [];
+    existing.push(newMechanic);
+    localStorage.setItem('batman_created_mechanics', JSON.stringify(existing));
+
+    if (onCreateMechanic) {
+      onCreateMechanic(newMechanic);
+    }
+
+    setSuccessMsg(`Mechanic account successfully created for ${name} (${station})! You can now log in at /mechanic/login`);
     setTimeout(() => {
       setName('');
       setEmail('');

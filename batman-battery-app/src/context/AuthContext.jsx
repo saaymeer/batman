@@ -74,6 +74,27 @@ export function AuthProvider({ children }) {
       return mechanicUser;
     }
 
+    // Check created mechanic accounts from Admin dashboard
+    const createdMechsRaw = localStorage.getItem('batman_created_mechanics');
+    const createdMechs = createdMechsRaw ? JSON.parse(createdMechsRaw) : [];
+    const matchedMech = createdMechs.find(
+      (m) => m.email.toLowerCase() === cleanEmail && m.password === password
+    );
+
+    if (matchedMech) {
+      const mechanicUser = {
+        email: matchedMech.email,
+        uid: `mech-${Date.now()}`,
+        role: 'mechanic',
+        displayName: `${matchedMech.name} (${matchedMech.stationName})`,
+      };
+      sessionStorage.setItem('batman_demo_auth', JSON.stringify(mechanicUser));
+      localStorage.setItem('batman_selected_mechanic', matchedMech.name);
+      setDemoUser(mechanicUser);
+      setUser(mechanicUser);
+      return mechanicUser;
+    }
+
     if (isDemoMode()) {
       if (
         cleanEmail === DEMO_EMAIL &&
@@ -86,7 +107,7 @@ export function AuthProvider({ children }) {
         return demoUser;
       }
       throw Object.assign(
-        new Error(`Incorrect credentials.\n\nUse test user:\nEmail: ${MECHANIC_DEMO_EMAIL}\nPassword: ${MECHANIC_DEMO_PASSWORD}`),
+        new Error(`Incorrect credentials. Account not found or wrong password.`),
         { code: 'auth/invalid-credential' }
       );
     }

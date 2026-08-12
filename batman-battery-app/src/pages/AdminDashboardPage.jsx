@@ -29,6 +29,10 @@ export default function AdminDashboardPage() {
   const [mechanicList, setMechanicList] = useState(TECHNICIANS_DATA);
   const [editingMechanic, setEditingMechanic] = useState(null);
 
+  const handleCreateMechanic = (newMech) => {
+    setMechanicList((prev) => [newMech, ...prev]);
+  };
+
   const handleSaveMechanic = (updatedTech) => {
     setMechanicList((prev) =>
       prev.map((t) => (t.name === updatedTech.name ? updatedTech : t))
@@ -422,7 +426,11 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* CREATE & EDIT MECHANIC MODALS */}
-      <CreateMechanicModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <CreateMechanicModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onCreateMechanic={handleCreateMechanic}
+      />
       <EditMechanicModal
         isOpen={!!editingMechanic}
         mechanic={editingMechanic}
