@@ -8,10 +8,9 @@ import Button from '@/components/common/Button';
 export default function MechanicLoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const demo = isDemoMode();
 
-  const [email, setEmail] = useState(demo ? MECHANIC_DEMO_EMAIL : '');
-  const [password, setPassword] = useState(demo ? MECHANIC_DEMO_PASSWORD : '');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -23,15 +22,7 @@ export default function MechanicLoginPage() {
       await login(email.trim(), password);
       navigate('/mechanic', { replace: true });
     } catch (err) {
-      if (
-        err.code === 'auth/invalid-credential' ||
-        err.code === 'auth/wrong-password' ||
-        err.code === 'auth/user-not-found'
-      ) {
-        setError(`Incorrect credentials. Use:\nEmail: ${MECHANIC_DEMO_EMAIL}\nPassword: ${MECHANIC_DEMO_PASSWORD}`);
-      } else {
-        setError(err.message ?? 'Login failed.');
-      }
+      setError(err.message ?? 'Invalid mechanic email or password.');
       setLoading(false);
     }
   };
@@ -49,21 +40,6 @@ export default function MechanicLoginPage() {
               Mechanic <span className="text-signal">Portal</span>
             </h1>
             <p className="text-fog text-sm mt-1">Batman Battery Rider Dispatch</p>
-          </div>
-        </div>
-
-        {/* Demo mode banner */}
-        <div className="bg-signal/10 border border-signal/25 rounded-2xl px-5 py-4 mb-5 flex gap-3">
-          <FlaskConical className="h-5 w-5 text-signal flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="font-display font-semibold text-signal text-sm">Mechanic Test User</p>
-            <p className="text-fog text-xs mt-1 leading-relaxed">
-              Credentials pre-filled for testing. Hit <strong className="text-mist">Sign in</strong> to access your rider radar.
-            </p>
-            <div className="mt-2 flex flex-col gap-0.5 font-mono text-xs text-mist bg-ink/50 rounded-lg px-3 py-2">
-              <span><span className="text-fog">Email: </span>{MECHANIC_DEMO_EMAIL}</span>
-              <span><span className="text-fog">Password: </span>{MECHANIC_DEMO_PASSWORD}</span>
-            </div>
           </div>
         </div>
 
@@ -85,7 +61,7 @@ export default function MechanicLoginPage() {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="testmech@gmail.com"
+                  placeholder="mechanic@batmanbattery.ph"
                   required
                   className="w-full rounded-xl bg-ink border border-white/10 hover:border-white/20 focus:border-signal focus:ring-1 focus:ring-signal/50 pl-10 pr-4 py-3 text-mist placeholder:text-fog/50 outline-none font-body text-base transition-colors"
                 />
