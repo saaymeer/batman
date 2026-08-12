@@ -13,9 +13,20 @@ export default function MechanicPortalPage() {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
   const { requests, loading } = useRequestsList();
-  const [selectedTech, setSelectedTech] = useState(
-    localStorage.getItem('batman_selected_mechanic') || 'Boyet R.'
-  );
+
+  // Primary mechanic name from logged-in session user object
+  const loggedInMechanicName = user?.displayName
+    ? user.displayName.split('(')[0].trim()
+    : (user?.name || localStorage.getItem('batman_selected_mechanic') || 'Boyet R.');
+
+  const [selectedTech, setSelectedTech] = useState(loggedInMechanicName);
+
+  useEffect(() => {
+    if (loggedInMechanicName) {
+      setSelectedTech(loggedInMechanicName);
+    }
+  }, [loggedInMechanicName]);
+
   const [isOnline, setIsOnline] = useState(
     localStorage.getItem(`batman_tech_status_${selectedTech}`) !== 'offline'
   );
@@ -24,24 +35,6 @@ export default function MechanicPortalPage() {
   );
 
   const prevJobsCountRef = useRef(0);
-
-  // Auto-detect nearest mechanic account based on current browser/device location
-  useEffect(() => {
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const { latitude: lat, longitude: lng } = pos.coords;
-          const { technician } = findNearestTechnician({ lat, lng }, TECHNICIANS_DATA);
-          if (technician?.name) {
-            setSelectedTech(technician.name);
-            localStorage.setItem('batman_selected_mechanic', technician.name);
-          }
-        },
-        () => {},
-        { timeout: 5000 }
-      );
-    }
-  }, []);
 
   const handleLogout = async () => {
     await logout();

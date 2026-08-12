@@ -149,10 +149,24 @@ export const TECHNICIANS = TECHNICIANS_DATA.map((t) => t.name);
 
 export function getTechnicianInfo(name) {
   if (!name) return null;
+  const cleanName = name.toLowerCase().trim();
+
+  // Check static list
   const found = TECHNICIANS_DATA.find(
-    (t) => t.name.toLowerCase().trim() === name.toLowerCase().trim()
+    (t) => t.name.toLowerCase().trim() === cleanName
   );
   if (found) return found;
+
+  // Check dynamically created mechanics from Admin
+  try {
+    const createdMechsRaw = localStorage.getItem('batman_created_mechanics');
+    const createdMechs = createdMechsRaw ? JSON.parse(createdMechsRaw) : [];
+    const matched = createdMechs.find(
+      (m) => m.name.toLowerCase().trim() === cleanName
+    );
+    if (matched) return matched;
+  } catch (_) {}
+
   return {
     name,
     town: 'Metro Cebu Hub',
