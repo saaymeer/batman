@@ -12,11 +12,20 @@ export default function MechanicPortalPage() {
   const [selectedTech, setSelectedTech] = useState(
     localStorage.getItem('batman_selected_mechanic') || 'Rico M.'
   );
+  const [isOnline, setIsOnline] = useState(
+    localStorage.getItem(`batman_tech_status_${selectedTech}`) !== 'offline'
+  );
   const [notifGranted, setNotifGranted] = useState(
     typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted'
   );
 
   const prevJobsCountRef = useRef(0);
+
+  const toggleOnlineStatus = () => {
+    const nextState = !isOnline;
+    setIsOnline(nextState);
+    localStorage.setItem(`batman_tech_status_${selectedTech}`, nextState ? 'online' : 'offline');
+  };
 
   const handleEnableNotifications = async () => {
     const granted = await requestNotificationPermission();
@@ -99,30 +108,39 @@ export default function MechanicPortalPage() {
       {/* Main Content */}
       <main className="flex-1 px-4 py-5 max-w-2xl mx-auto w-full flex flex-col gap-5">
         {/* Rider Status & Dispatch Radar Header */}
-        <div className="bg-surface border border-signal/30 rounded-2xl p-4 shadow-lg flex items-center justify-between">
+        <div className={`bg-surface border rounded-2xl p-4 shadow-lg flex items-center justify-between transition-all ${isOnline ? 'border-signal/30' : 'border-white/10 opacity-75'}`}>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="h-12 w-12 rounded-full bg-go/15 border border-go/40 flex items-center justify-center">
-                <Radio className="h-6 w-6 text-go animate-pulse" />
+              <div className={`h-12 w-12 rounded-full border flex items-center justify-center transition-colors ${isOnline ? 'bg-go/15 border-go/40' : 'bg-fog/10 border-white/10'}`}>
+                <Radio className={`h-6 w-6 ${isOnline ? 'text-go animate-pulse' : 'text-fog'}`} />
               </div>
-              <span className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-go border-2 border-ink" />
+              <span className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-ink ${isOnline ? 'bg-go' : 'bg-fog'}`} />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-bold font-display text-mist text-base">{selectedTech}</span>
-                <span className="text-[10px] font-bold uppercase tracking-wider bg-go/20 text-go border border-go/30 px-2 py-0.5 rounded-md">
-                  Online & Ready
+                <span className={`text-[10px] font-bold uppercase tracking-wider border px-2 py-0.5 rounded-md ${isOnline ? 'bg-go/20 text-go border-go/30' : 'bg-fog/20 text-fog border-fog/30'}`}>
+                  {isOnline ? 'Online & Ready' : 'Offline / On Break'}
                 </span>
               </div>
               <p className="text-fog text-xs mt-0.5">
-                Auto-dispatch radar active • {techInfo?.town ?? 'Metro Cebu'}
+                {isOnline ? `Auto-dispatch active • ${techInfo?.town ?? 'Metro Cebu'}` : 'Radar paused — You will not receive auto-dispatch calls'}
               </p>
             </div>
           </div>
 
-          <div className="text-right">
-            <p className="text-[10px] uppercase tracking-wider text-fog font-display font-semibold">Active Jobs</p>
-            <p className="text-xl font-bold font-display text-signal">{activeJobs.length}</p>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={toggleOnlineStatus}
+              className={`px-4 py-2.5 rounded-xl font-display font-bold text-xs transition-all flex items-center gap-2 shadow-md ${
+                isOnline
+                  ? 'bg-go/20 border border-go/40 text-go hover:bg-go/30'
+                  : 'bg-alert/20 border border-alert/40 text-alert hover:bg-alert/30'
+              }`}
+            >
+              <span className={`h-2.5 w-2.5 rounded-full ${isOnline ? 'bg-go animate-ping' : 'bg-alert'}`} />
+              {isOnline ? 'GO OFFLINE' : 'GO ONLINE'}
+            </button>
           </div>
         </div>
 

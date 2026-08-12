@@ -72,7 +72,7 @@ export function formatETADisplay(originCoords, destCoords) {
 }
 
 /**
- * Automatically finds the nearest technician station to a customer's GPS location.
+ * Automatically finds the nearest ONLINE technician station to a customer's GPS location.
  * @param {{ lat: number, lng: number }} customerLoc 
  * @param {Array<{ name: string, coords: { lat: number, lng: number }, stationName: string, town: string }>} techniciansList 
  */
@@ -81,10 +81,22 @@ export function findNearestTechnician(customerLoc, techniciansList) {
     return { technician: techniciansList?.[0] ?? null, distanceKm: null };
   }
 
+  // Filter mechanics who are currently online (if state exists in localStorage)
+  const availableTechs = techniciansList.filter((tech) => {
+    try {
+      const status = localStorage.getItem(`batman_tech_status_${tech.name}`);
+      return status !== 'offline';
+    } catch (_) {
+      return true;
+    }
+  });
+
+  const pool = availableTechs.length > 0 ? availableTechs : techniciansList;
+
   let nearest = null;
   let minDistance = Infinity;
 
-  for (const tech of techniciansList) {
+  for (const tech of pool) {
     if (!tech.coords?.lat || !tech.coords?.lng) continue;
     const dist = calculateHaversineDistance(
       customerLoc.lat,
@@ -99,7 +111,7 @@ export function findNearestTechnician(customerLoc, techniciansList) {
   }
 
   return {
-    technician: nearest ?? techniciansList[0],
+    technician: nearest ?? pool[0],
     distanceKm: minDistance === Infinity ? null : minDistance,
   };
 }
