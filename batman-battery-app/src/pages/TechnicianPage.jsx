@@ -410,33 +410,57 @@ export default function TechnicianPage() {
         </div>
       )}
 
-      {roadRoute ? (
-        <div className="mx-4 mt-3 bg-surface rounded-xl border border-white/8 px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Navigation2 className="h-4 w-4 text-signal" />
-            <span className="text-fog text-sm font-display">
-              {isRerouting ? '🔄 Recalculating route…' : `Route to customer from ${techPos ? 'Current GPS Location' : (techInfo?.town || 'Station')}`}
-            </span>
-          </div>
-          <div className="text-right">
-            <span className="font-bold font-display text-signal text-base">{roadRoute.distanceKm} km</span>
-            <span className="text-fog text-xs ml-1.5">(~{roadRoute.durationMin} mins)</span>
-          </div>
-        </div>
-      ) : (
-        distance !== null && (
-          <div className="mx-4 mt-3 bg-surface rounded-xl border border-white/8 px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Navigation className="h-4 w-4 text-signal" />
-              <span className="text-fog text-sm font-display">Distance to customer</span>
+      {/* Google Maps style Navigation Banner & GO Action */}
+      <div className="mx-4 mt-3 bg-surface rounded-2xl border border-white/12 p-4 shadow-xl flex flex-col gap-3">
+        {/* Top summary row */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-12 w-12 rounded-2xl bg-go flex items-center justify-center shadow-[0_0_16px_rgba(63,191,127,0.4)]">
+              <Navigation className="h-6 w-6 text-ink fill-ink animate-bounce" />
             </div>
-            <span className="font-bold font-display text-signal text-base">{formatDist(distance)}</span>
+            <div>
+              <p className="font-display font-bold text-mist text-base flex items-center gap-1.5">
+                <span>Navigate to</span>
+                <span className="text-signal">{request.customerName}</span>
+              </p>
+              <p className="text-fog text-xs font-mono">
+                {request.addressText || 'Stranded Customer Location'}
+              </p>
+            </div>
           </div>
-        )
-      )}
 
-      {/* Location Sharing Controls & Large Gold Button */}
-      <div className="px-4 mt-4 flex flex-col gap-3">
+          {roadRoute && (
+            <div className="text-right">
+              <p className="font-bold font-display text-go text-xl leading-none">
+                ~{roadRoute.durationMin} <span className="text-xs text-fog uppercase">min</span>
+              </p>
+              <p className="text-fog text-xs font-mono mt-0.5">{roadRoute.distanceKm} km</p>
+            </div>
+          )}
+        </div>
+
+        {/* Turn-by-turn instruction box */}
+        <div className="bg-ink/80 rounded-xl p-3 border border-white/8 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <Navigation2 className="h-5 w-5 text-go flex-shrink-0" />
+            <p className="text-mist font-display font-bold text-xs">
+              {isRerouting
+                ? '🔄 Recalculating road path...'
+                : tracking
+                ? `Head towards customer location (${roadRoute?.distanceKm || ''} km away)`
+                : `Ready for dispatch from ${techInfo?.stationName || 'Station'}`}
+            </p>
+          </div>
+          {tracking && (
+            <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-go bg-go/20 border border-go/30 px-2 py-0.5 rounded-md">
+              <span className="h-2 w-2 rounded-full bg-go animate-ping" /> NAV GO ACTIVE
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Location Sharing Controls & Large Google Maps "START NAV GO" Button */}
+      <div className="px-4 mt-3 flex flex-col gap-3">
         {geoError && (
           <div className="flex items-center gap-2 bg-alert/10 border border-alert/25 rounded-xl px-4 py-3">
             <WifiOff className="h-4 w-4 text-alert flex-shrink-0" />
@@ -445,29 +469,31 @@ export default function TechnicianPage() {
         )}
 
         {lastSync && (
-          <div className="flex items-center justify-center gap-2 text-xs text-go bg-go/10 border border-go/20 py-2 rounded-xl">
-            <CheckCircle2 className="h-3.5 w-3.5" />
+          <div className="flex items-center justify-center gap-2 text-xs text-go bg-go/10 border border-go/20 py-2 rounded-xl font-display font-semibold">
+            <CheckCircle2 className="h-4 w-4" />
             Live location streaming to customer • Synced {lastSync.toLocaleTimeString()}
           </div>
         )}
 
-        {/* Big Gold Location Sharing Button */}
+        {/* Google Maps style "START / GO" Navigation Button */}
         {!tracking ? (
           <button
             id="ready-share-location-btn"
             onClick={handleReadyToShare}
             disabled={isAdvancingStatus}
-            className="w-full flex items-center justify-center gap-2.5 px-5 py-4 rounded-2xl bg-[#F5A623] text-black font-bold font-display text-base hover:bg-[#e0951a] active:scale-[0.98] transition-all shadow-[0_4px_24px_rgba(245,166,35,0.4)] disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-3 px-6 py-4.5 rounded-2xl bg-go text-ink font-bold font-display text-lg hover:bg-go/90 active:scale-[0.98] transition-all shadow-[0_4px_24px_rgba(63,191,127,0.4)] disabled:opacity-50"
           >
-            <Navigation className="h-5 w-5 fill-black text-black" />
-            {isAdvancingStatus ? 'Updating status…' : 'Start sharing my location'}
+            <div className="h-8 w-8 rounded-full bg-ink/20 flex items-center justify-center">
+              <Navigation className="h-5 w-5 fill-ink text-ink" />
+            </div>
+            <span>{isAdvancingStatus ? 'Updating Navigation...' : 'START / GO — Live GPS Navigation'}</span>
           </button>
         ) : (
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-go/15 border border-go/30">
               <span className="h-3 w-3 rounded-full bg-go animate-ping" />
               <span className="text-go font-bold font-display text-sm uppercase tracking-wider">
-                Live Location Broadcast Active
+                🟢 GO NAVIGATION ACTIVE & STREAMING
               </span>
             </div>
             <button
@@ -475,7 +501,7 @@ export default function TechnicianPage() {
               onClick={stopTracking}
               className="w-full py-3 rounded-xl border border-white/10 text-fog text-sm font-display hover:bg-white/5 transition-colors"
             >
-              Stop sharing location
+              Pause Navigation / Stop Sharing
             </button>
           </div>
         )}
