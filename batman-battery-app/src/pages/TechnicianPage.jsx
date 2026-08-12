@@ -310,7 +310,7 @@ export default function TechnicianPage() {
       </div>
 
       {/* Map */}
-      <div className="mx-4 mt-4 rounded-2xl overflow-hidden border border-white/10 shadow-xl" style={{ height: 260 }}>
+      <div className="mx-4 mt-4 rounded-2xl overflow-hidden border border-white/10 shadow-xl" style={{ height: 280 }}>
         <MapContainer
           center={defaultCenter}
           zoom={14}
@@ -334,7 +334,7 @@ export default function TechnicianPage() {
           {customerLoc?.lat && (
             <Marker position={[customerLoc.lat, customerLoc.lng]} icon={customerIcon}>
               <Popup>
-                <strong>{request.customerName}</strong><br />Stranded here
+                <strong>{request.customerName}</strong><br />Stranded location
               </Popup>
             </Marker>
           )}
@@ -375,7 +375,7 @@ export default function TechnicianPage() {
         </MapContainer>
       </div>
 
-      {/* Distance & ETA */}
+      {/* Distance & Route info callout */}
       {roadRoute ? (
         <div className="mx-4 mt-3 bg-surface rounded-xl border border-white/8 px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -383,7 +383,7 @@ export default function TechnicianPage() {
             <span className="text-fog text-sm font-display">Route to customer from {techInfo?.town || 'Station'}</span>
           </div>
           <div className="text-right">
-            <span className="font-bold font-display text-signal">{roadRoute.distanceKm} km</span>
+            <span className="font-bold font-display text-signal text-base">{roadRoute.distanceKm} km</span>
             <span className="text-fog text-xs ml-1.5">(~{roadRoute.durationMin} mins)</span>
           </div>
         </div>
@@ -394,12 +394,12 @@ export default function TechnicianPage() {
               <Navigation className="h-4 w-4 text-signal" />
               <span className="text-fog text-sm font-display">Distance to customer</span>
             </div>
-            <span className="font-bold font-display text-signal">{formatDist(distance)}</span>
+            <span className="font-bold font-display text-signal text-base">{formatDist(distance)}</span>
           </div>
         )
       )}
 
-      {/* Readiness Prompt & Location Sharing controls */}
+      {/* Location Sharing Controls & Large Gold Button */}
       <div className="px-4 mt-4 flex flex-col gap-3">
         {geoError && (
           <div className="flex items-center gap-2 bg-alert/10 border border-alert/25 rounded-xl px-4 py-3">
@@ -409,56 +409,29 @@ export default function TechnicianPage() {
         )}
 
         {lastSync && (
-          <div className="flex items-center gap-2 text-xs text-fog">
-            <CheckCircle2 className="h-3.5 w-3.5 text-go" />
-            Location synced at {lastSync.toLocaleTimeString()}
+          <div className="flex items-center justify-center gap-2 text-xs text-go bg-go/10 border border-go/20 py-2 rounded-xl">
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            Live location streaming to customer • Synced {lastSync.toLocaleTimeString()}
           </div>
         )}
 
-        {/* Readiness Card for Assigned Status */}
-        {request.status === 'assigned' && !tracking && (
-          <div className="bg-signal/10 border border-signal/30 rounded-2xl p-4 text-center flex flex-col gap-3 shadow-lg">
-            <div className="flex items-center justify-center gap-2 text-signal">
-              <Radio className="h-5 w-5 animate-pulse" />
-              <h3 className="font-bold font-display text-sm uppercase tracking-wider">
-                Are you ready to share your location?
-              </h3>
-            </div>
-            <p className="text-mist text-xs leading-relaxed">
-              You are assigned to this job from <strong className="text-signal">{techInfo?.town || 'Station'}</strong>.
-              Clicking ready will update the status to <strong className="text-go">On the Way</strong> and notify the customer so they can track your arrival in real-time.
-            </p>
-            <button
-              id="ready-share-location-btn"
-              onClick={handleReadyToShare}
-              disabled={isAdvancingStatus}
-              className="w-full flex items-center justify-center gap-2.5 px-5 py-4 rounded-xl bg-signal text-ink font-bold font-display text-base hover:bg-signal/90 active:scale-[0.97] transition-all shadow-[0_0_20px_6px_rgba(245,166,35,0.35)] disabled:opacity-50"
-            >
-              <Navigation className="h-5 w-5 fill-ink" />
-              {isAdvancingStatus ? 'Updating status…' : 'I am Ready — Share Live Location & Start Trip'}
-            </button>
-          </div>
-        )}
-
-        {/* If status is already en_route but tracking stopped */}
-        {request.status !== 'assigned' && !tracking && (
+        {/* Big Gold Location Sharing Button */}
+        {!tracking ? (
           <button
-            id="start-tracking-btn"
+            id="ready-share-location-btn"
             onClick={handleReadyToShare}
-            className="w-full flex items-center justify-center gap-2.5 px-5 py-4 rounded-2xl bg-signal text-ink font-bold font-display text-base hover:bg-signal/90 active:scale-[0.97] transition-all shadow-[0_0_20px_6px_rgba(245,166,35,0.35)]"
+            disabled={isAdvancingStatus}
+            className="w-full flex items-center justify-center gap-2.5 px-5 py-4 rounded-2xl bg-[#F5A623] text-black font-bold font-display text-base hover:bg-[#e0951a] active:scale-[0.98] transition-all shadow-[0_4px_24px_rgba(245,166,35,0.4)] disabled:opacity-50"
           >
-            <Navigation className="h-5 w-5 fill-ink" />
-            Start sharing my location
+            <Navigation className="h-5 w-5 fill-black text-black" />
+            {isAdvancingStatus ? 'Updating status…' : 'Start sharing my location'}
           </button>
-        )}
-
-        {/* If actively tracking */}
-        {tracking && (
+        ) : (
           <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-go/10 border border-go/25">
-              <span className="h-2.5 w-2.5 rounded-full bg-go animate-pulse" />
-              <span className="text-go font-semibold font-display text-sm">
-                Sharing live location from {techInfo?.town || 'Station'} to customer
+            <div className="flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-go/15 border border-go/30">
+              <span className="h-3 w-3 rounded-full bg-go animate-ping" />
+              <span className="text-go font-bold font-display text-sm uppercase tracking-wider">
+                Live Location Broadcast Active
               </span>
             </div>
             <button
@@ -466,7 +439,7 @@ export default function TechnicianPage() {
               onClick={stopTracking}
               className="w-full py-3 rounded-xl border border-white/10 text-fog text-sm font-display hover:bg-white/5 transition-colors"
             >
-              Stop sharing
+              Stop sharing location
             </button>
           </div>
         )}
