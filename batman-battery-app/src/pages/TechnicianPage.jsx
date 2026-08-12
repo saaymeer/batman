@@ -242,12 +242,15 @@ export default function TechnicianPage() {
 
   return (
     <div className="min-h-screen bg-ink flex flex-col">
-      {/* Header */}
+      {/* Header with Back to Mechanic Portal button */}
       <header className="px-5 pt-6 pb-4 border-b border-white/8 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="h-9 w-9 rounded-xl bg-signal flex items-center justify-center shadow-[0_0_12px_4px_rgba(245,166,35,0.3)]">
-            <Zap className="h-5 w-5 text-ink fill-ink" />
-          </div>
+        <div className="flex items-center gap-3">
+          <Link
+            to="/mechanic"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-fog hover:text-mist hover:bg-white/10 text-xs font-display transition-colors"
+          >
+            ← Back to Dispatch
+          </Link>
           <div>
             <p className="font-bold font-display text-mist text-sm leading-tight">
               Batman Battery <span className="text-signal">24/7</span>
@@ -434,16 +437,43 @@ export default function TechnicianPage() {
                 Live Location Broadcast Active
               </span>
             </div>
+        {/* Job Status Update Actions */}
+        <div className="flex flex-col gap-2 pt-2">
+          {request.status === 'en_route' && (
             <button
-              id="stop-tracking-btn"
-              onClick={stopTracking}
-              className="w-full py-3 rounded-xl border border-white/10 text-fog text-sm font-display hover:bg-white/5 transition-colors"
+              onClick={async () => {
+                setIsAdvancingStatus(true);
+                await updateRequestStatus(id, 'arrived');
+                setIsAdvancingStatus(false);
+              }}
+              disabled={isAdvancingStatus}
+              className="w-full py-3.5 rounded-2xl bg-go/20 border border-go/40 text-go font-bold font-display text-sm hover:bg-go/30 transition-all shadow-md"
             >
-              Stop sharing location
+              Mark as Arrived at Customer Location
             </button>
-          </div>
-        )}
-      </div>
+          )}
+
+          {request.status === 'arrived' && (
+            <button
+              onClick={async () => {
+                setIsAdvancingStatus(true);
+                await updateRequestStatus(id, 'completed');
+                stopTracking();
+                setIsAdvancingStatus(false);
+              }}
+              disabled={isAdvancingStatus}
+              className="w-full py-4 rounded-2xl bg-go text-ink font-bold font-display text-sm hover:bg-go/90 transition-all shadow-[0_0_20px_rgba(63,191,127,0.35)]"
+            >
+              Mark Job Completed (Done)
+            </button>
+          )}
+
+          {request.status === 'completed' && (
+            <div className="py-3 rounded-2xl bg-go/10 border border-go/20 text-center text-go font-bold font-display text-sm">
+              ✓ Job Completed Successfully
+            </div>
+          )}
+        </div>
 
       <p className="text-center text-[11px] text-fog/40 mt-6 mb-4 px-5">
         Your location is only shared while this page is open. The customer can see you moving on their map.
