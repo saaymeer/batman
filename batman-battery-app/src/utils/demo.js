@@ -6,6 +6,9 @@
  * Simulates real-time Firestore behaviour with localStorage + setInterval.
  */
 
+import { TECHNICIANS_DATA } from '@/utils/statusConfig';
+import { findNearestTechnician } from '@/utils/geoUtils';
+
 // ── Detection ─────────────────────────────────────────────
 
 const PLACEHOLDER_KEY = 'your-api-key-here';
@@ -162,6 +165,19 @@ export async function demoCreateRequest(data) {
 
   const id = `demo-${Date.now()}`;
   const ts = { toDate: () => now() };
+
+  // Auto-find nearest technician based on customer GPS location
+  let assignedTechName = null;
+  let autoStatus = 'pending';
+
+  if (data.location?.lat) {
+    const { technician } = findNearestTechnician(data.location, TECHNICIANS_DATA);
+    if (technician?.name) {
+      assignedTechName = technician.name;
+      autoStatus = 'assigned';
+    }
+  }
+
   const req = {
     id,
     clientRequestId: data.clientRequestId || `idemp-${Date.now()}`,
@@ -172,8 +188,8 @@ export async function demoCreateRequest(data) {
     notes: data.notes || '',
     location: data.location || null,
     addressText: data.addressText || '',
-    status: 'pending',
-    assignedTechnician: null,
+    status: autoStatus,
+    assignedTechnician: assignedTechName,
     createdAt: ts,
     updatedAt: ts,
     completedAt: null,

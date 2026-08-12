@@ -4,6 +4,7 @@ import LandingPage from '@/pages/LandingPage';
 import CustomerRequestPage from '@/pages/CustomerRequestPage';
 import CustomerTrackPage from '@/pages/CustomerTrackPage';
 import TechnicianPage from '@/pages/TechnicianPage';
+import MechanicPortalPage from '@/pages/MechanicPortalPage';
 import AdminLoginPage from '@/pages/AdminLoginPage';
 import AdminDashboardPage from '@/pages/AdminDashboardPage';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
@@ -59,6 +60,7 @@ export default function App() {
               <Route path="/request" element={<CustomerRequestPage />} />
               <Route path="/track/:id" element={<CustomerTrackPage />} />
               <Route path="/tech/:id" element={<TechnicianPage />} />
+              <Route path="/mechanic" element={<MechanicPortalPage />} />
 
               {/* Admin routes */}
               <Route

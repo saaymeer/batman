@@ -70,3 +70,37 @@ export function formatETADisplay(originCoords, destCoords) {
     label: `~${etaMins} mins away (${distStr})`,
   };
 }
+
+/**
+ * Automatically finds the nearest technician station to a customer's GPS location.
+ * @param {{ lat: number, lng: number }} customerLoc 
+ * @param {Array<{ name: string, coords: { lat: number, lng: number }, stationName: string, town: string }>} techniciansList 
+ */
+export function findNearestTechnician(customerLoc, techniciansList) {
+  if (!customerLoc?.lat || !customerLoc?.lng || !techniciansList?.length) {
+    return { technician: techniciansList?.[0] ?? null, distanceKm: null };
+  }
+
+  let nearest = null;
+  let minDistance = Infinity;
+
+  for (const tech of techniciansList) {
+    if (!tech.coords?.lat || !tech.coords?.lng) continue;
+    const dist = calculateHaversineDistance(
+      customerLoc.lat,
+      customerLoc.lng,
+      tech.coords.lat,
+      tech.coords.lng
+    );
+    if (dist !== null && dist < minDistance) {
+      minDistance = dist;
+      nearest = tech;
+    }
+  }
+
+  return {
+    technician: nearest ?? techniciansList[0],
+    distanceKm: minDistance === Infinity ? null : minDistance,
+  };
+}
+

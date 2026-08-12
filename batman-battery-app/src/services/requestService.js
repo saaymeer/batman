@@ -32,6 +32,8 @@ import {
 } from '@/utils/demo';
 import { logger } from '@/utils/logger';
 import { enqueueOfflineRequest, flushOfflineQueue } from './offlineQueue';
+import { TECHNICIANS_DATA } from '@/utils/statusConfig';
+import { findNearestTechnician } from '@/utils/geoUtils';
 
 const COLLECTION = 'requests';
 const requestsCol = () => collection(db, COLLECTION);
@@ -78,6 +80,18 @@ export async function createRequest(data, options = {}) {
       return existingId;
     }
 
+    // Auto-find nearest technician based on customer GPS location
+    let assignedTechName = null;
+    let autoStatus = 'pending';
+
+    if (data.location?.lat) {
+      const { technician } = findNearestTechnician(data.location, TECHNICIANS_DATA);
+      if (technician?.name) {
+        assignedTechName = technician.name;
+        autoStatus = 'assigned';
+      }
+    }
+
     const ref = await addDoc(requestsCol(), {
       clientRequestId,
       customerName: data.customerName,
@@ -91,8 +105,8 @@ export async function createRequest(data, options = {}) {
       notes: data.notes || '',
       location: data.location || null,
       addressText: data.addressText || '',
-      status: 'pending',
-      assignedTechnician: null,
+      status: autoStatus,
+      assignedTechnician: assignedTechName,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       completedAt: null,
