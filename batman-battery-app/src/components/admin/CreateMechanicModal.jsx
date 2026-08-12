@@ -49,8 +49,8 @@ export default function CreateMechanicModal({ isOpen, onClose, onCreateMechanic 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/80 backdrop-blur-sm animate-fade-in">
-      <div className="bg-surface border border-white/10 rounded-2xl w-full max-w-md p-6 shadow-2xl flex flex-col gap-4">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-ink/80 backdrop-blur-md animate-fade-in">
+      <div className="bg-surface border border-white/10 rounded-2xl w-full max-w-md p-6 shadow-2xl flex flex-col gap-4 relative z-[10000]">
         <div className="flex items-center justify-between border-b border-white/8 pb-3">
           <h3 className="font-display font-bold text-mist text-lg flex items-center gap-2">
             <User className="h-5 w-5 text-signal" />
