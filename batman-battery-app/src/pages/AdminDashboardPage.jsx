@@ -9,6 +9,7 @@ import DispatchMap from '@/components/admin/DispatchMap';
 import RequestList from '@/components/admin/RequestList';
 import RequestDetailPanel from '@/components/admin/RequestDetailPanel';
 import CreateMechanicModal from '@/components/admin/CreateMechanicModal';
+import EditMechanicModal from '@/components/admin/EditMechanicModal';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import {
   LogOut, Zap, Map, List, Clock, CheckCircle2, BarChart3, History, FlaskConical, RotateCcw, Activity, Terminal, X, Trash2, UserPlus, Users, LayoutDashboard, Shield, ChevronRight
@@ -24,6 +25,22 @@ export default function AdminDashboardPage() {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'history' | 'mechanics'
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [mechanicList, setMechanicList] = useState(TECHNICIANS_DATA);
+  const [editingMechanic, setEditingMechanic] = useState(null);
+
+  const handleSaveMechanic = (updatedTech) => {
+    setMechanicList((prev) =>
+      prev.map((t) => (t.name === updatedTech.name ? updatedTech : t))
+    );
+    setEditingMechanic(null);
+  };
+
+  const handleDeleteMechanic = (techName) => {
+    if (confirm(`Are you sure you want to delete mechanic ${techName}?`)) {
+      setMechanicList((prev) => prev.filter((t) => t.name !== techName));
+    }
+  };
 
   const [logsOpen, setLogsOpen] = useState(false);
   const [logs, setLogs] = useState([]);
@@ -335,10 +352,10 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
-                  {TECHNICIANS_DATA.map((t) => (
+                  {mechanicList.map((t) => (
                     <div
                       key={t.name}
-                      className="bg-surface border border-white/8 rounded-2xl p-5 shadow-lg flex flex-col gap-3"
+                      className="bg-surface border border-white/8 rounded-2xl p-5 shadow-lg flex flex-col gap-3 relative group"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -350,9 +367,23 @@ export default function AdminDashboardPage() {
                             <p className="text-go text-xs font-semibold">{t.stationName}</p>
                           </div>
                         </div>
-                        <span className="text-[10px] uppercase tracking-wider font-bold bg-go/10 text-go border border-go/20 px-2.5 py-1 rounded-md">
-                          Active Hub
-                        </span>
+
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            onClick={() => setEditingMechanic(t)}
+                            className="p-2 rounded-lg bg-white/5 border border-white/10 text-fog hover:text-signal hover:bg-white/10 text-xs transition-colors"
+                            title="Edit mechanic details"
+                          >
+                            ✏️ Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteMechanic(t.name)}
+                            className="p-2 rounded-lg bg-alert/10 border border-alert/20 text-alert hover:bg-alert/20 text-xs transition-colors"
+                            title="Delete mechanic profile"
+                          >
+                            🗑️ Delete
+                          </button>
+                        </div>
                       </div>
 
                       <div className="bg-ink/50 rounded-xl p-3 text-xs text-fog flex flex-col gap-1 border border-white/5 font-mono">
@@ -390,8 +421,14 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* CREATE MECHANIC MODAL */}
+      {/* CREATE & EDIT MECHANIC MODALS */}
       <CreateMechanicModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <EditMechanicModal
+        isOpen={!!editingMechanic}
+        mechanic={editingMechanic}
+        onClose={() => setEditingMechanic(null)}
+        onSave={handleSaveMechanic}
+      />
     </div>
   );
 }
