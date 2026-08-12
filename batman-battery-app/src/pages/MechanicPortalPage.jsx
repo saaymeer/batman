@@ -129,16 +129,42 @@ export default function MechanicPortalPage() {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 px-4 py-6 max-w-2xl mx-auto w-full flex flex-col gap-6">
+      <main className="flex-1 px-4 py-5 max-w-2xl mx-auto w-full flex flex-col gap-5">
+        {/* Rider Status & Dispatch Radar Header */}
+        <div className="bg-surface border border-signal/30 rounded-2xl p-4 shadow-lg flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="h-12 w-12 rounded-full bg-go/15 border border-go/40 flex items-center justify-center">
+                <Radio className="h-6 w-6 text-go animate-pulse" />
+              </div>
+              <span className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-go border-2 border-ink" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-bold font-display text-mist text-base">{selectedTech}</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider bg-go/20 text-go border border-go/30 px-2 py-0.5 rounded-md">
+                  Online & Ready
+                </span>
+              </div>
+              <p className="text-fog text-xs mt-0.5">
+                Auto-dispatch radar active • {techInfo?.town ?? 'Metro Cebu'}
+              </p>
+            </div>
+          </div>
+
+          <div className="text-right">
+            <p className="text-[10px] uppercase tracking-wider text-fog font-display font-semibold">Active Jobs</p>
+            <p className="text-xl font-bold font-display text-signal">{activeJobs.length}</p>
+          </div>
+        </div>
+
         {/* Active Jobs Header */}
-        <div className="flex items-center justify-between">
-          <h2 className="font-display font-bold text-mist text-lg flex items-center gap-2">
-            <Radio className="h-5 w-5 text-signal animate-pulse" />
-            Active Auto-Assigned Jobs
+        <div className="flex items-center justify-between pt-1">
+          <h2 className="font-display font-bold text-mist text-base flex items-center gap-2">
+            <Zap className="h-5 w-5 text-signal" />
+            Auto-Dispatched Jobs ({activeJobs.length})
           </h2>
-          <span className="bg-signal/20 text-signal border border-signal/30 text-xs font-bold font-display px-3 py-1 rounded-full">
-            {activeJobs.length} Assigned
-          </span>
+          <span className="text-fog text-xs font-mono">Maxim/MoveIt Dispatch Protocol</span>
         </div>
 
         {loading ? (
@@ -147,10 +173,12 @@ export default function MechanicPortalPage() {
           </div>
         ) : activeJobs.length === 0 ? (
           <div className="bg-surface/40 border border-white/8 rounded-2xl p-8 text-center flex flex-col items-center gap-3">
-            <CheckCircle2 className="h-12 w-12 text-go/50" />
-            <h3 className="font-display font-semibold text-mist text-base">No pending jobs for {selectedTech}</h3>
-            <p className="text-fog text-xs max-w-xs">
-              When a customer stranded nearby submits a request, the system will automatically assign it to this station!
+            <div className="h-16 w-16 rounded-full bg-signal/10 border border-signal/25 flex items-center justify-center mb-1">
+              <Radio className="h-8 w-8 text-signal animate-pulse" />
+            </div>
+            <h3 className="font-display font-bold text-mist text-lg">Radar Scanning for Nearby Calls…</h3>
+            <p className="text-fog text-xs max-w-sm leading-relaxed">
+              When a stranded driver submits a request near <strong className="text-signal">{techInfo?.town || 'your location'}</strong>, the system will automatically match and dispatch the order directly to your phone screen with sound and push alerts!
             </p>
           </div>
         ) : (
