@@ -159,9 +159,21 @@ export default function MechanicPortalPage() {
                   {isOnline ? 'Online & Ready' : 'Offline / On Break'}
                 </span>
               </div>
-              <p className="text-fog text-xs mt-0.5">
-                {isOnline ? `Auto-dispatch active • ${techInfo?.town ?? 'Metro Cebu'}` : 'Radar paused — You will not receive auto-dispatch calls'}
-              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <Building2 className="h-3.5 w-3.5 text-signal flex-shrink-0" />
+                <select
+                  value={selectedTech}
+                  onChange={(e) => handleSelectTech(e.target.value)}
+                  className="bg-ink/80 border border-white/10 hover:border-signal/50 rounded-lg text-xs font-display font-semibold text-signal px-2 py-1 outline-none focus:border-signal transition-colors cursor-pointer"
+                  title="Switch your active station base location"
+                >
+                  {TECHNICIANS_DATA.map((t) => (
+                    <option key={t.name} value={t.name}>
+                      📍 {t.stationName} ({t.town})
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
