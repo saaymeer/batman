@@ -96,20 +96,28 @@ export default function AdminDashboardPage() {
     : null;
 
   return (
-    <div className="h-dvh bg-ink flex overflow-hidden">
-      {/* ── ADMIN SIDEBAR ── */}
-      <aside className="w-64 bg-surface border-r border-white/8 flex flex-col flex-shrink-0 z-20">
+    <div className="min-h-screen md:h-dvh bg-ink flex flex-col md:flex-row overflow-x-hidden md:overflow-hidden">
+      {/* ── ADMIN SIDEBAR / MOBILE NAV ── */}
+      <aside className="w-full md:w-64 bg-surface border-b md:border-b-0 md:border-r border-white/8 flex flex-col flex-shrink-0 z-20">
         {/* Brand */}
-        <div className="p-5 border-b border-white/8 flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-signal flex items-center justify-center shadow-[0_0_16px_4px_rgba(245,166,35,0.35)]">
-            <Zap className="h-5 w-5 text-ink fill-ink" />
+        <div className="p-4 md:p-5 border-b border-white/8 flex items-center justify-between md:justify-start gap-3">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-signal flex items-center justify-center shadow-[0_0_16px_4px_rgba(245,166,35,0.35)]">
+              <Zap className="h-5 w-5 text-ink fill-ink" />
+            </div>
+            <div>
+              <h1 className="font-bold font-display text-mist text-base leading-tight">
+                Batman Battery <span className="text-signal">24/7</span>
+              </h1>
+              <p className="text-fog text-xs">Admin Control Center</p>
+            </div>
           </div>
-          <div>
-            <h1 className="font-bold font-display text-mist text-base leading-tight">
-              Batman Battery <span className="text-signal">24/7</span>
-            </h1>
-            <p className="text-fog text-xs">Admin Control Center</p>
-          </div>
+          <button
+            onClick={handleLogout}
+            className="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-alert text-xs font-display"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+          </button>
         </div>
 
         {/* Sidebar Nav */}
@@ -197,19 +205,19 @@ export default function AdminDashboardPage() {
       {/* ── MAIN CONTENT AREA ── */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Header Stats Bar */}
-        <header className="flex items-center justify-between px-6 py-3.5 bg-surface border-b border-white/8 flex-shrink-0">
-          <div className="flex items-center gap-6 text-xs font-display">
-            <span className="flex items-center gap-2 text-fog">
+        <header className="flex flex-wrap items-center justify-between gap-3 px-4 md:px-6 py-3.5 bg-surface border-b border-white/8 flex-shrink-0">
+          <div className="flex flex-wrap items-center gap-4 md:gap-6 text-xs font-display">
+            <span className="flex items-center gap-1.5 text-fog">
               <BarChart3 className="h-4 w-4 text-signal" />
-              Total Dispatches Today: <strong className="text-mist">{todayRequests.length}</strong>
+              Today: <strong className="text-mist">{todayRequests.length}</strong>
             </span>
-            <span className="flex items-center gap-2 text-fog">
+            <span className="flex items-center gap-1.5 text-fog">
               <Clock className="h-4 w-4 text-go" />
-              Avg Response: <strong className="text-mist">{avgCompletion !== null ? formatDuration(avgCompletion) : '—'}</strong>
+              Avg: <strong className="text-mist">{avgCompletion !== null ? formatDuration(avgCompletion) : '—'}</strong>
             </span>
-            <span className="flex items-center gap-2 text-fog">
+            <span className="flex items-center gap-1.5 text-fog">
               <CheckCircle2 className="h-4 w-4 text-go" />
-              Succeeded Jobs: <strong className="text-go">{succeededHistory.length}</strong>
+              Succeeded: <strong className="text-go">{succeededHistory.length}</strong>
             </span>
           </div>
 
@@ -219,17 +227,17 @@ export default function AdminDashboardPage() {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-ink border border-white/10 text-fog hover:text-signal text-xs font-display transition-all"
             >
               <Activity className="h-3.5 w-3.5 text-signal" />
-              <span>Telemetry Logs ({logs.length})</span>
+              <span>Logs ({logs.length})</span>
             </button>
           </div>
         </header>
 
         {/* Dynamic Tab Body */}
-        <div className="flex-1 flex overflow-hidden relative">
+        <div className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden relative">
           {/* TAB 1: DASHBOARD (MAP + LIVE ACTIVE LIST) */}
           {activeTab === 'dashboard' && (
-            <div className="flex-1 flex overflow-hidden">
-              <div className="flex-1 relative">
+            <div className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden min-h-[500px]">
+              <div className="flex-1 h-[350px] md:h-full relative">
                 <DispatchMap
                   requests={activeRequests}
                   onSelectRequest={(r) => setSelectedRequest(r)}
