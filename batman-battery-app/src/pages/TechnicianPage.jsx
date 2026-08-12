@@ -172,8 +172,10 @@ export default function TechnicianPage() {
   const cfg = STATUS_CONFIG[request?.status] ?? STATUS_CONFIG.pending;
 
   const [roadRoute, setRoadRoute] = useState(null);
+  const [isRerouting, setIsRerouting] = useState(false);
+  const [isOffRoute, setIsOffRoute] = useState(false);
 
-  // Fetch real turn-by-turn road route via OSRM API
+  // Dynamic turn-by-turn road route recalculation via OSRM API whenever mechanic moves
   useEffect(() => {
     let isMounted = true;
     async function fetchNav() {
@@ -181,11 +183,31 @@ export default function TechnicianPage() {
         ? techPos
         : (techInfo?.coords ? techInfo.coords : BATMAN_SHOP_LOCATION);
       const dest = customerLoc?.lat ? customerLoc : null;
+
       if (origin?.lat && dest?.lat) {
+        setIsRerouting(true);
         const routeData = await getRoadRoute(origin.lat, origin.lng, dest.lat, dest.lng);
-        if (isMounted) setRoadRoute(routeData);
+        if (isMounted) {
+          setRoadRoute(routeData);
+          setIsRerouting(false);
+
+          // Detect off-route deviation (>80m from route path) if currently travelling
+          if (techPos?.lat && routeData?.coordinates?.length > 0) {
+            let minDistanceToPath = Infinity;
+            for (const [rLat, rLng] of routeData.coordinates) {
+              const d = getDistance(techPos.lat, techPos.lng, rLat, rLng);
+              if (d < minDistanceToPath) minDistanceToPath = d;
+            }
+            if (minDistanceToPath > 80) {
+              setIsOffRoute(true);
+            } else {
+              setIsOffRoute(false);
+            }
+          }
+        }
       }
     }
+
     fetchNav();
     return () => { isMounted = false; };
   }, [techPos?.lat, techPos?.lng, customerLoc?.lat, customerLoc?.lng, techInfo?.coords?.lat, techInfo?.coords?.lng]);
@@ -378,12 +400,23 @@ export default function TechnicianPage() {
         </MapContainer>
       </div>
 
-      {/* Distance & Route info callout */}
+      {/* Distance & Route info callout with dynamic Rerouting notification */}
+      {isOffRoute && (
+        <div className="mx-4 mt-3 bg-alert/20 border border-alert/40 rounded-xl px-4 py-2.5 flex items-center justify-between animate-pulse">
+          <div className="flex items-center gap-2 text-alert text-xs font-display font-bold">
+            <AlertTriangle className="h-4 w-4 text-alert flex-shrink-0" />
+            <span>Wrong Turn / Off-Route Detected! Recalculating road path…</span>
+          </div>
+        </div>
+      )}
+
       {roadRoute ? (
         <div className="mx-4 mt-3 bg-surface rounded-xl border border-white/8 px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Navigation2 className="h-4 w-4 text-signal" />
-            <span className="text-fog text-sm font-display">Route to customer from {techInfo?.town || 'Station'}</span>
+            <span className="text-fog text-sm font-display">
+              {isRerouting ? '🔄 Recalculating route…' : `Route to customer from ${techPos ? 'Current GPS Location' : (techInfo?.town || 'Station')}`}
+            </span>
           </div>
           <div className="text-right">
             <span className="font-bold font-display text-signal text-base">{roadRoute.distanceKm} km</span>
