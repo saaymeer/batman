@@ -168,7 +168,11 @@ export default function TechnicianPage() {
     }
   };
 
-  const customerLoc = request?.location;
+  // Customer location coordinates (with fallback to Cebu City / request addressText)
+  const customerLoc = request?.location?.lat
+    ? request.location
+    : { lat: 10.3119, lng: 123.9180 };
+
   const cfg = STATUS_CONFIG[request?.status] ?? STATUS_CONFIG.pending;
 
   const [roadRoute, setRoadRoute] = useState(null);
@@ -182,7 +186,7 @@ export default function TechnicianPage() {
       const origin = techPos?.lat
         ? techPos
         : (techInfo?.coords ? techInfo.coords : BATMAN_SHOP_LOCATION);
-      const dest = customerLoc?.lat ? customerLoc : null;
+      const dest = customerLoc;
 
       if (origin?.lat && dest?.lat) {
         setIsRerouting(true);
@@ -210,7 +214,7 @@ export default function TechnicianPage() {
 
     fetchNav();
     return () => { isMounted = false; };
-  }, [techPos?.lat, techPos?.lng, customerLoc?.lat, customerLoc?.lng, techInfo?.coords?.lat, techInfo?.coords?.lng]);
+  }, [techPos?.lat, techPos?.lng, customerLoc.lat, customerLoc.lng, techInfo?.coords?.lat, techInfo?.coords?.lng]);
 
   if (loading) {
     return (
