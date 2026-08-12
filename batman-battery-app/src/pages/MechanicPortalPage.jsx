@@ -4,6 +4,7 @@ import { useRequestsList } from '@/hooks/useRequestsList';
 import { TECHNICIANS_DATA, getTechnicianInfo, STATUS_CONFIG } from '@/utils/statusConfig';
 import { updateRequestStatus, updateTechnicianLocation } from '@/services/requestService';
 import { useAuth } from '@/context/AuthContext';
+import { findNearestTechnician } from '@/utils/geoUtils';
 import { requestNotificationPermission, triggerMechanicPushNotification } from '@/services/notificationService';
 import { Zap, Wrench, MapPin, Phone, User, Navigation, CheckCircle2, ChevronRight, AlertCircle, Building2, Radio, Bell, BellOff, LogOut } from 'lucide-react';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
@@ -23,6 +24,24 @@ export default function MechanicPortalPage() {
   );
 
   const prevJobsCountRef = useRef(0);
+
+  // Auto-detect nearest mechanic account based on current browser/device location
+  useEffect(() => {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude: lat, longitude: lng } = pos.coords;
+          const { technician } = findNearestTechnician({ lat, lng }, TECHNICIANS_DATA);
+          if (technician?.name) {
+            setSelectedTech(technician.name);
+            localStorage.setItem('batman_selected_mechanic', technician.name);
+          }
+        },
+        () => {},
+        { timeout: 5000 }
+      );
+    }
+  }, []);
 
   const handleLogout = async () => {
     await logout();
