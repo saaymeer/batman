@@ -65,9 +65,10 @@ export function AuthProvider({ children }) {
         email: MECHANIC_DEMO_EMAIL,
         uid: 'test-mech-001',
         role: 'mechanic',
-        displayName: 'Rico M. (Test Mechanic)',
+        displayName: 'Boyet R. (Mactan Airport Hub)',
       };
       sessionStorage.setItem('batman_demo_auth', JSON.stringify(mechanicUser));
+      localStorage.setItem('batman_selected_mechanic', 'Boyet R.');
       setDemoUser(mechanicUser);
       setUser(mechanicUser);
       return mechanicUser;

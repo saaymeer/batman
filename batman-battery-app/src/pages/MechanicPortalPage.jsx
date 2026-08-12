@@ -13,7 +13,7 @@ export default function MechanicPortalPage() {
   const navigate = useNavigate();
   const { requests, loading } = useRequestsList();
   const [selectedTech, setSelectedTech] = useState(
-    localStorage.getItem('batman_selected_mechanic') || 'Rico M.'
+    localStorage.getItem('batman_selected_mechanic') || 'Boyet R.'
   );
   const [isOnline, setIsOnline] = useState(
     localStorage.getItem(`batman_tech_status_${selectedTech}`) !== 'offline'
