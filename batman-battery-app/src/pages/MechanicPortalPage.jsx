@@ -3,11 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useRequestsList } from '@/hooks/useRequestsList';
 import { TECHNICIANS_DATA, getTechnicianInfo, STATUS_CONFIG } from '@/utils/statusConfig';
 import { updateRequestStatus, updateTechnicianLocation } from '@/services/requestService';
+import { useAuth } from '@/context/AuthContext';
 import { requestNotificationPermission, triggerMechanicPushNotification } from '@/services/notificationService';
-import { Zap, Wrench, MapPin, Phone, User, Navigation, CheckCircle2, ChevronRight, AlertCircle, Building2, Radio, Bell, BellOff } from 'lucide-react';
+import { Zap, Wrench, MapPin, Phone, User, Navigation, CheckCircle2, ChevronRight, AlertCircle, Building2, Radio, Bell, BellOff, LogOut } from 'lucide-react';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 
 export default function MechanicPortalPage() {
+  const { logout, user } = useAuth();
+  const navigate = useNavigate();
   const { requests, loading } = useRequestsList();
   const [selectedTech, setSelectedTech] = useState(
     localStorage.getItem('batman_selected_mechanic') || 'Rico M.'
@@ -20,6 +23,11 @@ export default function MechanicPortalPage() {
   );
 
   const prevJobsCountRef = useRef(0);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/mechanic/login', { replace: true });
+  };
 
   const toggleOnlineStatus = () => {
     const nextState = !isOnline;
@@ -87,7 +95,7 @@ export default function MechanicPortalPage() {
           </div>
         </div>
 
-        <div>
+        <div className="flex items-center gap-2">
           {!notifGranted ? (
             <button
               onClick={handleEnableNotifications}
@@ -102,6 +110,15 @@ export default function MechanicPortalPage() {
               Alerts Active
             </span>
           )}
+
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-fog hover:text-mist hover:bg-white/10 font-display font-semibold text-xs transition-colors"
+            title="Log out of Mechanic Portal"
+          >
+            <LogOut className="h-3.5 w-3.5 text-alert" />
+            <span>Logout</span>
+          </button>
         </div>
       </header>
 
