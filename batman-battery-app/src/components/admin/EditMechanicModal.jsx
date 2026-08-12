@@ -1,13 +1,32 @@
 import { useState, useEffect } from 'react';
-import { Mail, Lock, User, Building2, Phone, CheckCircle2 } from 'lucide-react';
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import { Mail, Lock, User, Building2, Phone, CheckCircle2, MapPin } from 'lucide-react';
 import Button from '@/components/common/Button';
-import { TECHNICIANS_DATA } from '@/utils/statusConfig';
+
+// Station green pin
+const stationIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41],
+});
+
+function LocationPicker({ coords, setCoords }) {
+  useMapEvents({
+    click(e) {
+      setCoords({ lat: e.latlng.lat, lng: e.latlng.lng });
+    },
+  });
+  return coords ? <Marker position={[coords.lat, coords.lng]} icon={stationIcon} /> : null;
+}
 
 export default function EditMechanicModal({ isOpen, onClose, mechanic, onSave }) {
   const [name, setName] = useState('');
   const [station, setStation] = useState('');
   const [town, setTown] = useState('');
   const [phone, setPhone] = useState('');
+  const [coords, setCoords] = useState({ lat: 10.3157, lng: 123.8854 });
   const [successMsg, setSuccessMsg] = useState('');
 
   useEffect(() => {
@@ -16,6 +35,9 @@ export default function EditMechanicModal({ isOpen, onClose, mechanic, onSave })
       setStation(mechanic.stationName || '');
       setTown(mechanic.town || '');
       setPhone(mechanic.phone || '');
+      if (mechanic.coords) {
+        setCoords(mechanic.coords);
+      }
     }
   }, [mechanic]);
 
@@ -29,8 +51,9 @@ export default function EditMechanicModal({ isOpen, onClose, mechanic, onSave })
       stationName: station,
       town,
       phone,
+      coords,
     });
-    setSuccessMsg(`Updated details for ${name}!`);
+    setSuccessMsg(`Updated station location pin for ${name}!`);
     setTimeout(() => {
       setSuccessMsg('');
       onClose();
@@ -39,10 +62,10 @@ export default function EditMechanicModal({ isOpen, onClose, mechanic, onSave })
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-ink/80 backdrop-blur-md animate-fade-in">
-      <div className="bg-surface border border-white/10 rounded-2xl w-full max-w-md p-6 shadow-2xl flex flex-col gap-4 relative z-[10000]">
+      <div className="bg-surface border border-white/10 rounded-2xl w-full max-w-lg p-6 shadow-2xl flex flex-col gap-4 relative z-[10000] max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between border-b border-white/8 pb-3">
           <h3 className="font-display font-bold text-mist text-lg flex items-center gap-2">
-            ✏️ Edit Mechanic Details
+            📍 Pin Station Location & Edit Details
           </h3>
           <button onClick={onClose} className="text-fog hover:text-mist text-sm font-display">
             ✕
@@ -88,37 +111,62 @@ export default function EditMechanicModal({ isOpen, onClose, mechanic, onSave })
               </div>
             </div>
 
+            {/* Interactive Map Pin Selector */}
             <div>
-              <label className="text-xs font-display uppercase tracking-wider text-fog mb-1 block">
-                City / Town Area
+              <label className="text-xs font-display uppercase tracking-wider text-signal mb-1.5 flex items-center justify-between">
+                <span className="flex items-center gap-1.5 font-bold">
+                  <MapPin className="h-4 w-4 text-signal" />
+                  Pin Exact Location on Map (Click map to move pin)
+                </span>
+                <span className="font-mono text-[10px] text-fog">
+                  {coords.lat.toFixed(4)}, {coords.lng.toFixed(4)}
+                </span>
               </label>
-              <input
-                type="text"
-                required
-                value={town}
-                onChange={(e) => setTown(e.target.value)}
-                className="w-full bg-ink border border-white/10 rounded-xl px-4 py-2.5 text-mist text-sm outline-none focus:border-signal"
-              />
+              <div className="h-48 rounded-xl overflow-hidden border border-white/10 shadow-inner relative">
+                <MapContainer
+                  center={[coords.lat, coords.lng]}
+                  zoom={13}
+                  style={{ height: '100%', width: '100%' }}
+                  zoomControl={false}
+                >
+                  <TileLayer
+                    attribution='© OpenStreetMap'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <LocationPicker coords={coords} setCoords={setCoords} />
+                </MapContainer>
+              </div>
             </div>
 
-            <div>
-              <label className="text-xs font-display uppercase tracking-wider text-fog mb-1 block">
-                Phone Number
-              </label>
-              <div className="relative">
-                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-fog" />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-display uppercase tracking-wider text-fog mb-1 block">
+                  City / Town Area
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={town}
+                  onChange={(e) => setTown(e.target.value)}
+                  className="w-full bg-ink border border-white/10 rounded-xl px-4 py-2.5 text-mist text-sm outline-none focus:border-signal"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-display uppercase tracking-wider text-fog mb-1 block">
+                  Phone Number
+                </label>
                 <input
                   type="tel"
                   required
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full bg-ink border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-mist text-sm outline-none focus:border-signal"
+                  className="w-full bg-ink border border-white/10 rounded-xl px-4 py-2.5 text-mist text-sm outline-none focus:border-signal"
                 />
               </div>
             </div>
 
             <Button type="submit" variant="primary" size="lg" className="mt-2 w-full">
-              Save Changes
+              Save Station Pin & Details
             </Button>
           </form>
         )}
