@@ -1,0 +1,12 @@
+{
+  "name": "batman-battery-workspace",
+  "private": true,
+  "workspaces": [
+    "batman-battery-app"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w batman-battery-app",
+    "build": "npm run build -w batman-battery-app",
+    "preview": "npm run preview -w batman-battery-app"
+  }
+}
