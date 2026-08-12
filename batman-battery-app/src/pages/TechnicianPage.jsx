@@ -427,16 +427,16 @@ export default function TechnicianPage() {
             className="w-full flex items-center justify-center gap-2.5 px-5 py-4 rounded-2xl bg-[#F5A623] text-black font-bold font-display text-base hover:bg-[#e0951a] active:scale-[0.98] transition-all shadow-[0_4px_24px_rgba(245,166,35,0.4)] disabled:opacity-50"
           >
             <Navigation className="h-5 w-5 fill-black text-black" />
-            {isAdvancingStatus ? 'Updating status…' : 'Start sharing my location'}
-          </button>
-        ) : (
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-go/15 border border-go/30">
-              <span className="h-3 w-3 rounded-full bg-go animate-ping" />
-              <span className="text-go font-bold font-display text-sm uppercase tracking-wider">
-                Live Location Broadcast Active
-              </span>
-            </div>
+            <button
+              id="stop-tracking-btn"
+              onClick={stopTracking}
+              className="w-full py-3 rounded-xl border border-white/10 text-fog text-sm font-display hover:bg-white/5 transition-colors"
+            >
+              Stop sharing location
+            </button>
+          </div>
+        )}
+
         {/* Job Status Update Actions */}
         <div className="flex flex-col gap-2 pt-2">
           {request.status === 'en_route' && (
@@ -474,6 +474,7 @@ export default function TechnicianPage() {
             </div>
           )}
         </div>
+      </div>
 
       <p className="text-center text-[11px] text-fog/40 mt-6 mb-4 px-5">
         Your location is only shared while this page is open. The customer can see you moving on their map.
