@@ -310,25 +310,43 @@ function MechanicJobCard({ job, techInfo }) {
         )}
       </div>
 
-      {/* Inline Full Screen Embedded Live GPS Navigation Map */}
+      {/* Full Screen Live GPS Navigation Map Modal */}
       {showInlineMap && (
-        <div className="rounded-2xl overflow-hidden border border-white/10 h-[550px] w-full relative shadow-2xl transition-all">
-          <iframe
-            src={`/tech/${job.id}`}
-            title={`Live Navigation Map - ${job.customerName}`}
-            className="w-full h-full border-none"
-          />
+        <div className="fixed inset-0 z-[9999] bg-ink/95 backdrop-blur-md flex flex-col p-4 md:p-6 animate-fade-in">
+          <div className="bg-surface border border-white/10 rounded-2xl w-full h-full flex flex-col overflow-hidden shadow-2xl relative">
+            <div className="px-5 py-3.5 border-b border-white/10 bg-surface/90 flex items-center justify-between z-10">
+              <div className="flex items-center gap-2.5">
+                <Navigation className="h-5 w-5 text-signal fill-signal" />
+                <h3 className="font-display font-bold text-mist text-base">
+                  Live GPS Navigation & Trip Map — <span className="text-signal">{job.customerName}</span>
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowInlineMap(false)}
+                className="px-3.5 py-1.5 rounded-xl bg-alert/20 border border-alert/40 text-alert hover:bg-alert/30 font-display font-bold text-xs transition-colors"
+              >
+                ✕ Close Full Screen Map
+              </button>
+            </div>
+            <div className="flex-1 w-full h-full relative">
+              <iframe
+                src={`/tech/${job.id}`}
+                title={`Live Navigation Map - ${job.customerName}`}
+                className="w-full h-full border-none"
+              />
+            </div>
+          </div>
         </div>
       )}
 
       {/* Action Buttons */}
       <div className="flex flex-col gap-2 mt-1">
         <button
-          onClick={() => setShowInlineMap(!showInlineMap)}
+          onClick={() => setShowInlineMap(true)}
           className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-signal text-ink font-bold font-display text-sm hover:bg-signal/90 transition-all shadow-[0_0_16px_4px_rgba(245,166,35,0.25)]"
         >
           <Navigation className="h-4 w-4 fill-ink" />
-          {showInlineMap ? 'Hide Live Navigation Map' : '🗺️ Display Live GPS Navigation & Trip Map'}
+          🗺️ Open Full Screen Live GPS Map Modal
         </button>
 
         <div className="grid grid-cols-2 gap-2">
