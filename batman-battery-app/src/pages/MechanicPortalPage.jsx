@@ -310,9 +310,9 @@ function MechanicJobCard({ job, techInfo }) {
         )}
       </div>
 
-      {/* Inline Embedded Live GPS Navigation Map Toggle */}
+      {/* Inline Full Screen Embedded Live GPS Navigation Map */}
       {showInlineMap && (
-        <div className="rounded-xl overflow-hidden border border-white/10 h-64 relative shadow-inner">
+        <div className="rounded-2xl overflow-hidden border border-white/10 h-[550px] w-full relative shadow-2xl transition-all">
           <iframe
             src={`/tech/${job.id}`}
             title={`Live Navigation Map - ${job.customerName}`}
