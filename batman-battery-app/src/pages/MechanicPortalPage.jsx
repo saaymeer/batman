@@ -248,6 +248,7 @@ function MechanicJobCard({ job, techInfo }) {
   const navigate = useNavigate();
   const cfg = STATUS_CONFIG[job.status] ?? STATUS_CONFIG.pending;
   const [updating, setUpdating] = useState(false);
+  const [showInlineMap, setShowInlineMap] = useState(false);
 
   const handleAdvanceStatus = async (nextStatus) => {
     setUpdating(true);
@@ -259,6 +260,11 @@ function MechanicJobCard({ job, techInfo }) {
       setUpdating(false);
     }
   };
+
+  const customerLoc = job?.location;
+  const stationLoc = techInfo?.coords
+    ? [techInfo.coords.lat, techInfo.coords.lng]
+    : [BATMAN_SHOP_LOCATION.lat, BATMAN_SHOP_LOCATION.lng];
 
   return (
     <div className="bg-surface border border-white/10 rounded-2xl p-5 shadow-xl flex flex-col gap-4">
@@ -304,14 +310,25 @@ function MechanicJobCard({ job, techInfo }) {
         )}
       </div>
 
+      {/* Inline Embedded Live GPS Navigation Map Toggle */}
+      {showInlineMap && (
+        <div className="rounded-xl overflow-hidden border border-white/10 h-64 relative shadow-inner">
+          <iframe
+            src={`/tech/${job.id}`}
+            title={`Live Navigation Map - ${job.customerName}`}
+            className="w-full h-full border-none"
+          />
+        </div>
+      )}
+
       {/* Action Buttons */}
       <div className="flex flex-col gap-2 mt-1">
         <button
-          onClick={() => navigate(`/tech/${job.id}`)}
+          onClick={() => setShowInlineMap(!showInlineMap)}
           className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-signal text-ink font-bold font-display text-sm hover:bg-signal/90 transition-all shadow-[0_0_16px_4px_rgba(245,166,35,0.25)]"
         >
           <Navigation className="h-4 w-4 fill-ink" />
-          Open Live GPS Navigation & Trip Map
+          {showInlineMap ? 'Hide Live Navigation Map' : '🗺️ Display Live GPS Navigation & Trip Map'}
         </button>
 
         <div className="grid grid-cols-2 gap-2">
@@ -339,7 +356,7 @@ function MechanicJobCard({ job, techInfo }) {
             <button
               onClick={() => handleAdvanceStatus('completed')}
               disabled={updating}
-              className="col-span-2 py-2.5 rounded-xl bg-go text-ink font-bold font-display text-xs hover:bg-go/90 transition-colors"
+              className="col-span-2 py-2.5 rounded-xl bg-go text-ink font-bold font-display text-xs hover:bg-go/90 transition-colors cursor-pointer"
             >
               Mark Job Completed (Done)
             </button>
