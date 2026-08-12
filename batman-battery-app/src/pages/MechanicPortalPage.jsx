@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRequestsList } from '@/hooks/useRequestsList';
 import { TECHNICIANS_DATA, getTechnicianInfo, STATUS_CONFIG } from '@/utils/statusConfig';
 import { updateRequestStatus, updateTechnicianLocation } from '@/services/requestService';
-import { Zap, Wrench, MapPin, Phone, User, Navigation, CheckCircle2, ChevronRight, AlertCircle, Building2, Radio } from 'lucide-react';
+import { requestNotificationPermission, triggerMechanicPushNotification } from '@/services/notificationService';
+import { Zap, Wrench, MapPin, Phone, User, Navigation, CheckCircle2, ChevronRight, AlertCircle, Building2, Radio, Bell, BellOff } from 'lucide-react';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 
 export default function MechanicPortalPage() {
@@ -11,10 +12,26 @@ export default function MechanicPortalPage() {
   const [selectedTech, setSelectedTech] = useState(
     localStorage.getItem('batman_selected_mechanic') || 'Rico M.'
   );
+  const [notifGranted, setNotifGranted] = useState(
+    typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted'
+  );
+
+  const prevJobsCountRef = useRef(0);
+
+  const handleEnableNotifications = async () => {
+    const granted = await requestNotificationPermission();
+    setNotifGranted(granted);
+    if (granted) {
+      triggerMechanicPushNotification('🚨 Batman Battery Alerts Active', {
+        body: `Push notifications enabled for ${selectedTech}! You will receive sound and pop-up alerts for nearby emergency requests.`,
+      });
+    }
+  };
 
   const handleSelectTech = (techName) => {
     setSelectedTech(techName);
     localStorage.setItem('batman_selected_mechanic', techName);
+    prevJobsCountRef.current = 0;
   };
 
   const techInfo = getTechnicianInfo(selectedTech);
@@ -26,6 +43,24 @@ export default function MechanicPortalPage() {
 
   const activeJobs = myAssignedJobs.filter((r) => r.status !== 'completed' && r.status !== 'cancelled');
   const completedJobs = myAssignedJobs.filter((r) => r.status === 'completed');
+
+  // Trigger Push Notification when a NEW job is auto-assigned to this mechanic
+  useEffect(() => {
+    if (loading) return;
+
+    if (activeJobs.length > prevJobsCountRef.current && prevJobsCountRef.current !== 0) {
+      const newestJob = activeJobs[0];
+      const customer = newestJob?.customerName || 'Customer';
+      const vehicle = `${newestJob?.vehicle?.make ?? ''} ${newestJob?.vehicle?.model ?? ''}`;
+      const location = newestJob?.addressText ? `at ${newestJob.addressText}` : 'stranded nearby';
+
+      triggerMechanicPushNotification(`⚡ NEW JOB AUTO-ASSIGNED: ${customer}`, {
+        body: `${vehicle} ${location}. Tap to open map navigation!`,
+      });
+    }
+
+    prevJobsCountRef.current = activeJobs.length;
+  }, [activeJobs.length, loading]);
 
   return (
     <div className="min-h-screen bg-ink flex flex-col">
@@ -50,9 +85,26 @@ export default function MechanicPortalPage() {
 
       {/* Mechanic Switcher */}
       <div className="bg-surface/80 border-b border-white/8 px-5 py-4">
-        <label className="block text-xs font-display uppercase tracking-wider text-fog mb-2">
-          Select Active Mechanic Profile:
-        </label>
+        <div className="flex items-center justify-between mb-2">
+          <label className="block text-xs font-display uppercase tracking-wider text-fog">
+            Select Active Mechanic Profile:
+          </label>
+
+          {!notifGranted ? (
+            <button
+              onClick={handleEnableNotifications}
+              className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-alert/15 border border-alert/30 text-alert font-display font-semibold text-xs hover:bg-alert/25 transition-colors"
+            >
+              <BellOff className="h-3.5 w-3.5" />
+              Enable Push Notifications
+            </button>
+          ) : (
+            <span className="flex items-center gap-1 text-go font-display font-semibold text-xs bg-go/10 border border-go/20 px-2.5 py-0.5 rounded-lg">
+              <Bell className="h-3.5 w-3.5" />
+              Alerts Active
+            </span>
+          )}
+        </div>
         <select
           value={selectedTech}
           onChange={(e) => handleSelectTech(e.target.value)}
