@@ -427,6 +427,16 @@ export default function TechnicianPage() {
             className="w-full flex items-center justify-center gap-2.5 px-5 py-4 rounded-2xl bg-[#F5A623] text-black font-bold font-display text-base hover:bg-[#e0951a] active:scale-[0.98] transition-all shadow-[0_4px_24px_rgba(245,166,35,0.4)] disabled:opacity-50"
           >
             <Navigation className="h-5 w-5 fill-black text-black" />
+            {isAdvancingStatus ? 'Updating status…' : 'Start sharing my location'}
+          </button>
+        ) : (
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-go/15 border border-go/30">
+              <span className="h-3 w-3 rounded-full bg-go animate-ping" />
+              <span className="text-go font-bold font-display text-sm uppercase tracking-wider">
+                Live Location Broadcast Active
+              </span>
+            </div>
             <button
               id="stop-tracking-btn"
               onClick={stopTracking}
