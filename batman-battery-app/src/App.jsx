@@ -5,12 +5,13 @@ import CustomerRequestPage from '@/pages/CustomerRequestPage';
 import CustomerTrackPage from '@/pages/CustomerTrackPage';
 import TechnicianPage from '@/pages/TechnicianPage';
 import MechanicPortalPage from '@/pages/MechanicPortalPage';
+import MechanicLoginPage from '@/pages/MechanicLoginPage';
 import AdminLoginPage from '@/pages/AdminLoginPage';
 import AdminDashboardPage from '@/pages/AdminDashboardPage';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import NetworkStatusBanner from '@/components/common/NetworkStatusBanner';
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children, redirectTo = "/admin/login" }) {
   const { user, loading } = useAuth();
   const location = useLocation();
 
@@ -23,7 +24,7 @@ function ProtectedRoute({ children }) {
   }
 
   if (!user) {
-    return <Navigate to="/admin/login" state={{ from: location }} replace />;
+    return <Navigate to={redirectTo} state={{ from: location }} replace />;
   }
 
   return children;
@@ -60,7 +61,16 @@ export default function App() {
               <Route path="/request" element={<CustomerRequestPage />} />
               <Route path="/track/:id" element={<CustomerTrackPage />} />
               <Route path="/tech/:id" element={<TechnicianPage />} />
-              <Route path="/mechanic" element={<MechanicPortalPage />} />
+              {/* Mechanic routes */}
+              <Route path="/mechanic/login" element={<MechanicLoginPage />} />
+              <Route
+                path="/mechanic"
+                element={
+                  <ProtectedRoute redirectTo="/mechanic/login">
+                    <MechanicPortalPage />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* Admin routes */}
               <Route

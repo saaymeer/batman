@@ -150,7 +150,6 @@ export default function MechanicPortalPage() {
             <Zap className="h-5 w-5 text-signal" />
             Auto-Dispatched Jobs ({activeJobs.length})
           </h2>
-          <span className="text-fog text-xs font-mono">Maxim/MoveIt Dispatch Protocol</span>
         </div>
 
         {loading ? (

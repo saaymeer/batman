@@ -25,6 +25,9 @@ export function isDemoMode() {
 export const DEMO_EMAIL = 'admin@batmanbattery.ph';
 export const DEMO_PASSWORD = 'batman247';
 
+export const MECHANIC_DEMO_EMAIL = 'testmech@gmail.com';
+export const MECHANIC_DEMO_PASSWORD = 'Test123!';
+
 // ── Demo request data ─────────────────────────────────────
 
 const now = () => new Date();

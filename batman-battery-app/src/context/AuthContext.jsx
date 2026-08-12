@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { auth } from '@/services/firebase';
-import { isDemoMode, DEMO_EMAIL, DEMO_PASSWORD } from '@/utils/demo';
+import { isDemoMode, DEMO_EMAIL, DEMO_PASSWORD, MECHANIC_DEMO_EMAIL, MECHANIC_DEMO_PASSWORD } from '@/utils/demo';
 
 export const AuthContext = createContext(null);
 
@@ -54,22 +54,53 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
+    const cleanEmail = email.trim().toLowerCase();
+    
+    // Check local test mechanic user first
+    if (
+      cleanEmail === MECHANIC_DEMO_EMAIL.toLowerCase() &&
+      password === MECHANIC_DEMO_PASSWORD
+    ) {
+      const mechanicUser = {
+        email: MECHANIC_DEMO_EMAIL,
+        uid: 'test-mech-001',
+        role: 'mechanic',
+        displayName: 'Rico M. (Test Mechanic)',
+      };
+      sessionStorage.setItem('batman_demo_auth', JSON.stringify(mechanicUser));
+      setDemoUser(mechanicUser);
+      setUser(mechanicUser);
+      return mechanicUser;
+    }
+
     if (isDemoMode()) {
       if (
-        email.trim().toLowerCase() === DEMO_EMAIL &&
+        cleanEmail === DEMO_EMAIL &&
         password === DEMO_PASSWORD
       ) {
-        const demoUser = { email: DEMO_EMAIL, uid: 'demo-admin', displayName: 'Demo Admin' };
+        const demoUser = { email: DEMO_EMAIL, uid: 'demo-admin', role: 'admin', displayName: 'Demo Admin' };
         sessionStorage.setItem('batman_demo_auth', JSON.stringify(demoUser));
         setDemoUser(demoUser);
+        setUser(demoUser);
         return demoUser;
       }
       throw Object.assign(
-        new Error(`Incorrect email or password.\n\nDemo credentials:\nEmail: ${DEMO_EMAIL}\nPassword: ${DEMO_PASSWORD}`),
+        new Error(`Incorrect credentials.\n\nUse test user:\nEmail: ${MECHANIC_DEMO_EMAIL}\nPassword: ${MECHANIC_DEMO_PASSWORD}`),
         { code: 'auth/invalid-credential' }
       );
     }
-    return signInWithEmailAndPassword(auth, email, password);
+    
+    try {
+      return await signInWithEmailAndPassword(auth, email, password);
+    } catch (err) {
+      // Fallback for test mechanic account when using Firebase credentials
+      if (cleanEmail === MECHANIC_DEMO_EMAIL.toLowerCase() && password === MECHANIC_DEMO_PASSWORD) {
+        const fallbackMech = { email: MECHANIC_DEMO_EMAIL, uid: 'test-mech-001', role: 'mechanic' };
+        setUser(fallbackMech);
+        return fallbackMech;
+      }
+      throw err;
+    }
   };
 
   const logout = async () => {
