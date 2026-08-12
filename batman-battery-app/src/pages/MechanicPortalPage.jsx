@@ -64,7 +64,7 @@ export default function MechanicPortalPage() {
 
   return (
     <div className="min-h-screen bg-ink flex flex-col">
-      {/* Top Bar */}
+      {/* Top Bar Header with Notifications Action */}
       <header className="px-5 pt-6 pb-4 border-b border-white/8 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <div className="h-10 w-10 rounded-xl bg-signal flex items-center justify-center shadow-[0_0_16px_4px_rgba(245,166,35,0.3)]">
@@ -78,55 +78,23 @@ export default function MechanicPortalPage() {
           </div>
         </div>
 
-        <Link to="/" className="text-xs font-display text-fog hover:text-mist transition-colors">
-          Customer Form →
-        </Link>
-      </header>
-
-      {/* Mechanic Switcher */}
-      <div className="bg-surface/80 border-b border-white/8 px-5 py-4">
-        <div className="flex items-center justify-between mb-2">
-          <label className="block text-xs font-display uppercase tracking-wider text-fog">
-            Select Active Mechanic Profile:
-          </label>
-
+        <div>
           {!notifGranted ? (
             <button
               onClick={handleEnableNotifications}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-alert/15 border border-alert/30 text-alert font-display font-semibold text-xs hover:bg-alert/25 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-alert/15 border border-alert/30 text-alert font-display font-semibold text-xs hover:bg-alert/25 transition-colors"
             >
               <BellOff className="h-3.5 w-3.5" />
-              Enable Push Notifications
+              Enable Alerts
             </button>
           ) : (
-            <span className="flex items-center gap-1 text-go font-display font-semibold text-xs bg-go/10 border border-go/20 px-2.5 py-0.5 rounded-lg">
+            <span className="flex items-center gap-1 text-go font-display font-semibold text-xs bg-go/10 border border-go/20 px-2.5 py-1 rounded-xl">
               <Bell className="h-3.5 w-3.5" />
               Alerts Active
             </span>
           )}
         </div>
-        <select
-          value={selectedTech}
-          onChange={(e) => handleSelectTech(e.target.value)}
-          className="w-full bg-ink border border-white/10 rounded-xl px-4 py-3 text-mist font-display font-semibold text-sm outline-none focus:border-signal"
-        >
-          {TECHNICIANS_DATA.map((t) => (
-            <option key={t.name} value={t.name}>
-              🧑‍🔧 {t.name} — {t.stationName} ({t.town})
-            </option>
-          ))}
-        </select>
-
-        {techInfo && (
-          <div className="mt-3 flex items-center justify-between text-xs text-fog bg-ink/50 rounded-lg p-2.5">
-            <span className="flex items-center gap-1.5 text-go font-medium font-display">
-              <Building2 className="h-3.5 w-3.5" />
-              {techInfo.stationName}
-            </span>
-            <span className="font-mono text-mist">{techInfo.phone}</span>
-          </div>
-        )}
-      </div>
+      </header>
 
       {/* Main Content */}
       <main className="flex-1 px-4 py-5 max-w-2xl mx-auto w-full flex flex-col gap-5">
