@@ -97,45 +97,45 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="min-h-screen md:h-dvh bg-ink flex flex-col md:flex-row overflow-x-hidden md:overflow-hidden">
-      {/* ── ADMIN SIDEBAR / MOBILE NAV ── */}
+      {/* ── ADMIN SIDEBAR (Desktop Left Sidebar / Mobile Header Navigation) ── */}
       <aside className="w-full md:w-64 bg-surface border-b md:border-b-0 md:border-r border-white/8 flex flex-col flex-shrink-0 z-20">
         {/* Brand */}
-        <div className="p-4 md:p-5 border-b border-white/8 flex items-center justify-between md:justify-start gap-3">
+        <div className="p-3.5 md:p-5 border-b border-white/8 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-signal flex items-center justify-center shadow-[0_0_16px_4px_rgba(245,166,35,0.35)]">
+            <div className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-signal flex items-center justify-center shadow-[0_0_16px_4px_rgba(245,166,35,0.35)] flex-shrink-0">
               <Zap className="h-5 w-5 text-ink fill-ink" />
             </div>
             <div>
-              <h1 className="font-bold font-display text-mist text-base leading-tight">
+              <h1 className="font-bold font-display text-mist text-sm md:text-base leading-tight">
                 Batman Battery <span className="text-signal">24/7</span>
               </h1>
-              <p className="text-fog text-xs">Admin Control Center</p>
+              <p className="text-fog text-[11px]">Admin Control Panel</p>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-alert text-xs font-display"
+            className="md:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-alert text-xs font-display"
           >
             <LogOut className="h-3.5 w-3.5" />
           </button>
         </div>
 
-        {/* Sidebar Nav */}
-        <nav className="flex-1 p-3 flex flex-col gap-1.5 overflow-y-auto">
+        {/* Sidebar Nav Items */}
+        <nav className="p-2 md:p-3 flex flex-row md:flex-col gap-1.5 overflow-x-auto md:overflow-y-auto no-scrollbar">
           <button
             onClick={() => { setActiveTab('dashboard'); setSelectedRequest(null); }}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-display text-sm font-semibold transition-all ${
+            className={`flex-1 md:w-full flex items-center justify-between gap-2.5 px-3 py-2 md:px-4 md:py-3 rounded-xl font-display text-xs md:text-sm font-semibold transition-all whitespace-nowrap ${
               activeTab === 'dashboard'
                 ? 'bg-signal text-ink shadow-[0_0_16px_rgba(245,166,35,0.3)]'
                 : 'text-fog hover:text-mist hover:bg-white/5'
             }`}
           >
-            <span className="flex items-center gap-3">
-              <LayoutDashboard className="h-4 w-4" />
-              Live Radar & Jobs
+            <span className="flex items-center gap-2">
+              <LayoutDashboard className="h-4 w-4 flex-shrink-0" />
+              <span>Live Radar & Jobs</span>
             </span>
             {activeRequests.length > 0 && (
-              <span className={`text-xs px-2 py-0.5 rounded-full font-mono font-bold ${
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold ${
                 activeTab === 'dashboard' ? 'bg-ink text-signal' : 'bg-signal/20 text-signal'
               }`}>
                 {activeRequests.length}
@@ -145,48 +145,48 @@ export default function AdminDashboardPage() {
 
           <button
             onClick={() => { setActiveTab('history'); setSelectedRequest(null); }}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-display text-sm font-semibold transition-all ${
+            className={`flex-1 md:w-full flex items-center justify-between gap-2.5 px-3 py-2 md:px-4 md:py-3 rounded-xl font-display text-xs md:text-sm font-semibold transition-all whitespace-nowrap ${
               activeTab === 'history'
                 ? 'bg-signal text-ink shadow-[0_0_16px_rgba(245,166,35,0.3)]'
                 : 'text-fog hover:text-mist hover:bg-white/5'
             }`}
           >
-            <span className="flex items-center gap-3">
-              <History className="h-4 w-4" />
-              Succeeded History
+            <span className="flex items-center gap-2">
+              <History className="h-4 w-4 flex-shrink-0" />
+              <span>Succeeded History</span>
             </span>
-            <span className="text-xs font-mono font-bold text-go bg-go/10 px-2 py-0.5 rounded-full">
+            <span className="text-[10px] font-mono font-bold text-go bg-go/10 px-1.5 py-0.5 rounded-full">
               {succeededHistory.length}
             </span>
           </button>
 
           <button
             onClick={() => { setActiveTab('mechanics'); setSelectedRequest(null); }}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-display text-sm font-semibold transition-all ${
+            className={`flex-1 md:w-full flex items-center justify-between gap-2.5 px-3 py-2 md:px-4 md:py-3 rounded-xl font-display text-xs md:text-sm font-semibold transition-all whitespace-nowrap ${
               activeTab === 'mechanics'
                 ? 'bg-signal text-ink shadow-[0_0_16px_rgba(245,166,35,0.3)]'
                 : 'text-fog hover:text-mist hover:bg-white/5'
             }`}
           >
-            <span className="flex items-center gap-3">
-              <Users className="h-4 w-4" />
-              Manage Mechanics
+            <span className="flex items-center gap-2">
+              <Users className="h-4 w-4 flex-shrink-0" />
+              <span>Manage Mechanics</span>
             </span>
           </button>
 
-          <div className="mt-4 pt-4 border-t border-white/8">
+          <div className="md:mt-4 md:pt-4 md:border-t border-white/8 flex-shrink-0">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-go/15 border border-go/30 text-go font-display font-bold text-xs hover:bg-go/20 transition-all shadow-md"
+              className="w-full flex items-center justify-center gap-1.5 px-3 py-2 md:px-4 md:py-3 rounded-xl bg-go/15 border border-go/30 text-go font-display font-bold text-xs hover:bg-go/20 transition-all shadow-md whitespace-nowrap"
             >
-              <UserPlus className="h-4 w-4" />
-              Create Mechanic Account
+              <UserPlus className="h-4 w-4 flex-shrink-0" />
+              <span>Create Account</span>
             </button>
           </div>
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-white/8 bg-ink/40 flex flex-col gap-3">
+        <div className="hidden md:flex p-4 border-t border-white/8 bg-ink/40 flex-col gap-3">
           <div className="flex items-center gap-2 text-xs text-fog">
             <Shield className="h-4 w-4 text-go" />
             <span className="truncate">{user?.email || 'admin@batmanbattery.ph'}</span>
@@ -221,23 +221,32 @@ export default function AdminDashboardPage() {
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => setLogsOpen((o) => !o)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-ink border border-white/10 text-fog hover:text-signal text-xs font-display transition-all"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-ink border border-white/10 text-fog hover:text-signal text-xs font-display transition-all"
             >
               <Activity className="h-3.5 w-3.5 text-signal" />
               <span>Logs ({logs.length})</span>
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-alert/15 border border-alert/30 text-alert hover:bg-alert/25 text-xs font-display font-semibold transition-all"
+              title="Sign Out of Admin Control Panel"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              <span>Sign Out</span>
             </button>
           </div>
         </header>
 
         {/* Dynamic Tab Body */}
-        <div className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden relative">
+        <div className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden relative min-h-0">
           {/* TAB 1: DASHBOARD (MAP + LIVE ACTIVE LIST) */}
           {activeTab === 'dashboard' && (
-            <div className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden min-h-[500px]">
-              <div className="flex-1 h-[350px] md:h-full relative">
+            <div className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden w-full">
+              <div className="w-full h-[250px] sm:h-[320px] md:h-full md:flex-1 relative flex-shrink-0">
                 <DispatchMap
                   requests={activeRequests}
                   onSelectRequest={(r) => setSelectedRequest(r)}
@@ -245,8 +254,8 @@ export default function AdminDashboardPage() {
                 />
               </div>
 
-              <aside className="w-80 xl:w-96 flex flex-col border-l border-white/8 overflow-hidden bg-surface">
-                <div className="p-4 border-b border-white/8 flex items-center justify-between">
+              <aside className="w-full md:w-80 xl:w-96 flex flex-col border-t md:border-t-0 md:border-l border-white/8 overflow-y-auto md:overflow-hidden bg-surface flex-1 md:flex-initial">
+                <div className="p-3.5 border-b border-white/8 flex items-center justify-between sticky top-0 bg-surface z-10">
                   <h2 className="font-display font-bold text-mist text-sm uppercase tracking-wider flex items-center gap-2">
                     <List className="h-4 w-4 text-signal" />
                     Auto-Dispatched Jobs ({activeRequests.length})

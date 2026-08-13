@@ -126,13 +126,14 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
-    if (isDemoMode()) {
-      sessionStorage.removeItem('batman_demo_auth');
-      setDemoUser(null);
-      return;
-    }
+    sessionStorage.removeItem('batman_demo_auth');
+    localStorage.removeItem('batman_logged_in_user');
+    setDemoUser(null);
+    setUser(null);
     try {
-      await signOut(auth);
+      if (auth) {
+        await signOut(auth);
+      }
     } catch (_) {}
   };
 

@@ -28,8 +28,8 @@ export default function MechanicLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-ink flex flex-col items-center justify-center px-5">
-      <div className="w-full max-w-sm animate-fade-in">
+    <div className="min-h-screen bg-ink flex flex-col items-center justify-center px-4 py-8 overflow-y-auto">
+      <div className="w-full max-w-sm animate-fade-in my-auto">
         {/* Brand */}
         <div className="flex flex-col items-center gap-3 mb-10">
           <div className="h-14 w-14 rounded-2xl bg-signal flex items-center justify-center shadow-[0_0_24px_8px_rgba(245,166,35,0.35)]">

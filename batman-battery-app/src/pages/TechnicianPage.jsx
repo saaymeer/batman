@@ -339,7 +339,7 @@ export default function TechnicianPage() {
       </div>
 
       {/* Map */}
-      <div className="mx-3 md:mx-4 mt-3 rounded-2xl overflow-hidden border border-white/10 shadow-2xl flex-1 min-h-[320px] relative">
+      <div className="mx-3 md:mx-4 mt-3 rounded-2xl overflow-hidden border border-white/10 shadow-2xl h-[360px] md:h-[450px] relative flex-shrink-0">
         <MapContainer
           center={defaultCenter}
           zoom={14}

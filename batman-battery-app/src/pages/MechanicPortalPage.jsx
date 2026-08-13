@@ -91,19 +91,21 @@ export default function MechanicPortalPage() {
     prevJobsCountRef.current = activeJobs.length;
   }, [activeJobs.length, loading]);
 
+  const [stationMenuOpen, setStationMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-ink flex flex-col">
       {/* Top Bar Header with Notifications Action */}
-      <header className="px-5 pt-6 pb-4 border-b border-white/8 flex items-center justify-between">
+      <header className="px-4 py-3.5 border-b border-white/8 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <div className="h-10 w-10 rounded-xl bg-signal flex items-center justify-center shadow-[0_0_16px_4px_rgba(245,166,35,0.3)]">
-            <Wrench className="h-5 w-5 text-ink" />
+          <div className="h-9 w-9 rounded-xl bg-signal flex items-center justify-center shadow-[0_0_16px_4px_rgba(245,166,35,0.3)] flex-shrink-0">
+            <Wrench className="h-4.5 w-4.5 text-ink" />
           </div>
           <div>
-            <h1 className="font-bold font-display text-mist text-base leading-tight">
+            <h1 className="font-bold font-display text-mist text-sm md:text-base leading-tight">
               Mechanic Dispatch <span className="text-signal">Portal</span>
             </h1>
-            <p className="text-fog text-xs">Batman Battery 24/7 Cebu</p>
+            <p className="text-fog text-[11px]">Batman Battery 24/7 Cebu</p>
           </div>
         </div>
 
@@ -111,69 +113,95 @@ export default function MechanicPortalPage() {
           {!notifGranted ? (
             <button
               onClick={handleEnableNotifications}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-alert/15 border border-alert/30 text-alert font-display font-semibold text-xs hover:bg-alert/25 transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-alert/15 border border-alert/30 text-alert font-display font-semibold text-xs hover:bg-alert/25 transition-colors"
             >
               <BellOff className="h-3.5 w-3.5" />
-              Enable Alerts
+              <span>Enable Alerts</span>
             </button>
           ) : (
             <span className="flex items-center gap-1 text-go font-display font-semibold text-xs bg-go/10 border border-go/20 px-2.5 py-1 rounded-xl">
               <Bell className="h-3.5 w-3.5" />
-              Alerts Active
+              <span>Alerts Active</span>
             </span>
           )}
 
           <button
             onClick={handleLogout}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-fog hover:text-mist hover:bg-white/10 font-display font-semibold text-xs transition-colors"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-fog hover:text-mist hover:bg-white/10 font-display font-semibold text-xs transition-colors"
             title="Log out of Mechanic Portal"
           >
             <LogOut className="h-3.5 w-3.5 text-alert" />
-            <span>Logout</span>
+            <span className="hidden xs:inline">Logout</span>
           </button>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 px-4 py-5 max-w-2xl mx-auto w-full flex flex-col gap-5">
+      <main className="flex-1 px-3 sm:px-4 py-4 max-w-2xl mx-auto w-full flex flex-col gap-4">
         {/* Rider Status & Dispatch Radar Header */}
-        <div className={`bg-surface border rounded-2xl p-4 shadow-lg flex items-center justify-between transition-all ${isOnline ? 'border-signal/30' : 'border-white/10 opacity-75'}`}>
+        <div className={`bg-surface border rounded-2xl p-4 shadow-lg flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5 transition-all ${isOnline ? 'border-signal/30' : 'border-white/10 opacity-75'}`}>
           <div className="flex items-center gap-3">
-            <div className="relative">
-              <div className={`h-12 w-12 rounded-full border flex items-center justify-center transition-colors ${isOnline ? 'bg-go/15 border-go/40' : 'bg-fog/10 border-white/10'}`}>
-                <Radio className={`h-6 w-6 ${isOnline ? 'text-go animate-pulse' : 'text-fog'}`} />
+            <div className="relative flex-shrink-0">
+              <div className={`h-11 w-11 rounded-full border flex items-center justify-center transition-colors ${isOnline ? 'bg-go/15 border-go/40' : 'bg-fog/10 border-white/10'}`}>
+                <Radio className={`h-5 w-5 ${isOnline ? 'text-go animate-pulse' : 'text-fog'}`} />
               </div>
-              <span className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-ink ${isOnline ? 'bg-go' : 'bg-fog'}`} />
+              <span className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-ink ${isOnline ? 'bg-go' : 'bg-fog'}`} />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold font-display text-mist text-base">{selectedTech}</span>
+            <div className="min-w-0 flex-1 relative">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-bold font-display text-mist text-base truncate">{selectedTech}</span>
                 <span className={`text-[10px] font-bold uppercase tracking-wider border px-2 py-0.5 rounded-md ${isOnline ? 'bg-go/20 text-go border-go/30' : 'bg-fog/20 text-fog border-fog/30'}`}>
-                  {isOnline ? 'Online & Ready' : 'Offline / On Break'}
+                  {isOnline ? 'Online & Ready' : 'Offline'}
                 </span>
               </div>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-1.5 mt-1">
                 <Building2 className="h-3.5 w-3.5 text-signal flex-shrink-0" />
-                <select
-                  value={selectedTech}
-                  onChange={(e) => handleSelectTech(e.target.value)}
-                  className="bg-ink/80 border border-white/10 hover:border-signal/50 rounded-lg text-xs font-display font-semibold text-signal px-2 py-1 outline-none focus:border-signal transition-colors cursor-pointer"
-                  title="Switch your active station base location"
+                <button
+                  type="button"
+                  onClick={() => setStationMenuOpen(!stationMenuOpen)}
+                  className="bg-ink/80 border border-white/10 hover:border-signal/50 rounded-lg text-xs font-display font-semibold text-signal px-2.5 py-1 flex items-center justify-between gap-1.5 outline-none focus:border-signal transition-colors text-left max-w-[210px] sm:max-w-xs"
                 >
-                  {TECHNICIANS_DATA.map((t) => (
-                    <option key={t.name} value={t.name}>
-                      📍 {t.stationName} ({t.town})
-                    </option>
-                  ))}
-                </select>
+                  <span className="truncate">📍 {techInfo?.stationName || selectedTech}</span>
+                  <ChevronRight className={`h-3 w-3 text-signal flex-shrink-0 transition-transform ${stationMenuOpen ? 'rotate-90' : ''}`} />
+                </button>
+
+                {/* Custom Compact Station Dropdown Menu */}
+                {stationMenuOpen && (
+                  <div className="absolute left-0 top-full mt-2 w-72 max-w-[85vw] bg-surface border border-white/15 rounded-xl shadow-2xl z-50 p-1.5 flex flex-col gap-1 max-h-60 overflow-y-auto animate-fade-in">
+                    <p className="text-[10px] font-display uppercase tracking-wider text-fog px-2.5 py-1 font-semibold border-b border-white/5">
+                      Select Active Base Hub
+                    </p>
+                    {TECHNICIANS_DATA.map((t) => (
+                      <button
+                        key={t.name}
+                        type="button"
+                        onClick={() => {
+                          handleSelectTech(t.name);
+                          setStationMenuOpen(false);
+                        }}
+                        className={`w-full text-left px-2.5 py-2 rounded-lg text-xs font-display flex items-start gap-2 transition-colors ${
+                          selectedTech === t.name
+                            ? 'bg-signal/20 text-signal font-bold border border-signal/30'
+                            : 'text-mist hover:bg-white/5'
+                        }`}
+                      >
+                        <MapPin className="h-3.5 w-3.5 text-signal flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="leading-tight font-bold">{t.stationName}</p>
+                          <p className="text-[10px] text-fog font-mono mt-0.5">{t.town}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-end">
             <button
               onClick={toggleOnlineStatus}
-              className={`px-4 py-2.5 rounded-xl font-display font-bold text-xs transition-all flex items-center gap-2 shadow-md ${
+              className={`w-full sm:w-auto px-4 py-2.5 rounded-xl font-display font-bold text-xs transition-all flex items-center justify-center gap-2 shadow-md ${
                 isOnline
                   ? 'bg-go/20 border border-go/40 text-go hover:bg-go/30'
                   : 'bg-alert/20 border border-alert/40 text-alert hover:bg-alert/30'
